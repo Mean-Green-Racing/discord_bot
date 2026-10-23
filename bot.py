@@ -66,7 +66,7 @@ intents.message_content = True
 bot = discord.Client(intents=intents)
 trivia = TriviaGame(
     ROOT / "data" / "trivia.sqlite3",
-    timeout_seconds=int(os.getenv("TRIVIA_TIMEOUT_SECONDS", "60")),
+    timeout_seconds=int(os.getenv("TRIVIA_TIMEOUT_SECONDS", "15")),
     tick_seconds=int(os.getenv("TRIVIA_COUNTDOWN_STEP", "5")),
 )
 last_used: dict[int, float] = {}
