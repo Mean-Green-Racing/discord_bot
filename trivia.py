@@ -65,7 +65,7 @@ class Round:
 
 
 class TriviaGame:
-    def __init__(self, db_path: str | Path, timeout_seconds: int = 60, tick_seconds: int = 5):
+    def __init__(self, db_path: str | Path, timeout_seconds: int = 15, tick_seconds: int = 5):
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.timeout_seconds = max(10, int(timeout_seconds))
@@ -236,7 +236,6 @@ class TriviaGame:
             seconds = max(0, math.ceil(game.deadline - time.monotonic()))
             minutes, seconds = divmod(seconds, 60)
             content += (
-                f"⏳ **Time left: {minutes:02d}:{seconds:02d}** "
                 f"(ends <t:{game.deadline_epoch}:R>)\n"
                 "React to this message with 🇦 🇧 🇨 or 🇩. "
                 "One guess per player; first correct reaction wins."
