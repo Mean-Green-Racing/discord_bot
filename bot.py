@@ -467,7 +467,9 @@ async def on_message(message: discord.Message):
             answer = reply_text(response) or "Claude returned an empty answer."
         links = kb.source_links(hits)[:3]
         if links:
-            note = "\n\nRetrieved sources: " + " | ".join(links)
+            # One bare URL per line keeps Discord links clickable and avoids
+            # rendering literal [text](url) markup in regular bot messages.
+            note = "\n\n**Retrieved sources:**\n" + "\n".join(links)
         else:
             note = "\n\n*(General answer; no matching repository excerpts.)*"
         if kb.last_error:

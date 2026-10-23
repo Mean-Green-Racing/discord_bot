@@ -641,5 +641,8 @@ class KnowledgeBase:
                 base += f"#L{p.start}-L{p.end}"
             elif p.source_kind == "page":
                 base += f"#page={p.start}"
-            links.append(f"[{p.path}]({base})")
+            # Send bare HTTPS URLs so Discord can auto-link them reliably.
+            # Do not wrap them in Markdown [label](url) syntax: some clients
+            # or bridge integrations display that syntax literally.
+            links.append(base)
         return links
