@@ -350,7 +350,7 @@ class TriviaGame:
             for letter, answer in game.options.items()
         )
         content = (
-            f"**{'FSAE TRIVIA' if game.source == 'fsae' else 'VEHICLE TRIVIA'} — {game.difficulty.upper()}** "
+            f"**{'FSAE TRIVIA' if game.source == 'fsae' else 'VEHICLE TRIVIA'} | {game.difficulty.upper()}** "
             f"({POINTS[game.difficulty]} points)\n\n"
             f"{safe(game.question)}\n\n{options}\n\n"
         )
