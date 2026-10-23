@@ -628,21 +628,24 @@ class KnowledgeBase:
         )
 
     def source_links(self, hits: list[SearchHit]) -> list[str]:
-        """Link to the current branch version of each source file.
+        """Clickable Discord links with short labels pointing to current files.
 
-        Return plain URLs without commit hashes, page/line anchors, or
-        Markdown link syntax so Discord displays clean, clickable file links.
+        Discord supports masked Markdown links: [title](https://example.com).
+        Keep branch-based URLs (no commit hashes or line-number fragments).
+        Add the parent directory if multiple source files share a basename.
         """
         slug = github_repo_slug(self.repo_url) or "Mean-Green-Racing/fsae-kb"
         branch = quote(self.branch, safe="/")
-        seen = set()
+        paths = list(dict.fromkeys(hit.passage.path for hit in hits))
+        name_counts = Counter(PurePosixPath(path).name for path in paths)
         links = []
-        for hit in hits:
-            path = hit.passage.path
-            if path in seen:
-                continue
-            seen.add(path)
-            links.append(
-                f"https://github.com/{slug}/blob/{branch}/{quote(path, safe='/')}"
-            )
+        for path in paths:
+            item = PurePosixPath(path)
+            label = item.name
+            if name_counts[label] > 1 and item.parent != PurePosixPath("."):
+                label = f"{item.parent.name}/{label}"
+            # Escape Markdown link-label delimiters if filenames contain them.
+            label = label.replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
+            url = f"https://github.com/{slug}/blob/{branch}/{quote(path, safe='/')}"
+            links.append(f"[{label}]({url})")
         return links
