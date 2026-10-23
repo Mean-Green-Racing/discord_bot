@@ -628,21 +628,21 @@ class KnowledgeBase:
         )
 
     def source_links(self, hits: list[SearchHit]) -> list[str]:
+        """Link to the current branch version of each source file.
+
+        Return plain URLs without commit hashes, page/line anchors, or
+        Markdown link syntax so Discord displays clean, clickable file links.
+        """
+        slug = github_repo_slug(self.repo_url) or "Mean-Green-Racing/fsae-kb"
+        branch = quote(self.branch, safe="/")
         seen = set()
         links = []
         for hit in hits:
-            p = hit.passage
-            if p.path in seen:
+            path = hit.passage.path
+            if path in seen:
                 continue
-            seen.add(p.path)
-            encoded = quote(p.path, safe="/")
-            base = f"https://github.com/Mean-Green-Racing/fsae-kb/blob/{self.commit}/{encoded}"
-            if p.source_kind == "lines":
-                base += f"#L{p.start}-L{p.end}"
-            elif p.source_kind == "page":
-                base += f"#page={p.start}"
-            # Send bare HTTPS URLs so Discord can auto-link them reliably.
-            # Do not wrap them in Markdown [label](url) syntax: some clients
-            # or bridge integrations display that syntax literally.
-            links.append(base)
+            seen.add(path)
+            links.append(
+                f"https://github.com/{slug}/blob/{branch}/{quote(path, safe='/')}"
+            )
         return links
