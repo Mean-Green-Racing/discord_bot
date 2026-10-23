@@ -8,6 +8,8 @@ from __future__ import annotations
 import asyncio
 from collections import Counter, defaultdict
 from dataclasses import dataclass
+import hashlib
+import json
 import math
 import os
 from pathlib import Path, PurePosixPath
@@ -15,6 +17,8 @@ import re
 import shlex
 import stat
 import subprocess
+import tempfile
+import threading
 import time
 from urllib.parse import quote, unquote
 
@@ -24,6 +28,10 @@ MAX_FILE_BYTES = 3_000_000
 MAX_DOC_CHARS = 7500
 MAX_PASSAGES = 5
 MAX_FILES = 3
+# Only broaden retrieval on questions that actually need cross-document reasoning.
+DEEP_MAX_PASSAGES = 8
+DEEP_MAX_FILES = 5
+DEEP_MAX_DOC_CHARS = 11500
 STOPWORDS = {
     "a", "an", "and", "are", "as", "at", "be", "by", "can", "could", "do", "does",
     "for", "from", "how", "i", "in", "is", "it", "me", "my", "of", "on", "or",
@@ -106,6 +114,10 @@ class KnowledgeBase:
         branch: str = "main",
         ssh_key_path: str | Path = "",
         refresh_seconds: int = 600,
+        semantic_enabled: bool = True,
+        embedding_model_name: str = "BAAI/bge-small-en-v1.5",
+        embedding_threads: int = 1,
+        embedding_batch_size: int = 8,
     ) -> None:
         self.folder = folder
         self.repo_url = ssh_repo_url(repo_url)
@@ -120,6 +132,23 @@ class KnowledgeBase:
         self.routes: dict[str, str] = {}
         self.doc_words: dict[str, set[str]] = {}
         self.file_count = 0
+        # Local FastEmbed/ONNX inference, not a paid API. Keep the cache outside
+        # the disposable Git mirror, which is reset on every repository update.
+        self.semantic_enabled = semantic_enabled
+        self.embedding_model_name = embedding_model_name
+        self.embedding_threads = max(1, int(embedding_threads))
+        self.embedding_batch_size = min(16, max(1, int(embedding_batch_size)))
+        self.embedding_cache_dir = self.folder.parent / "embedding_models"
+        self.embedding_index_path = self.folder.parent / "semantic_index.npz"
+        self.semantic_status = "disabled" if not semantic_enabled else "pending"
+        self.semantic_last_error = ""
+        self._semantic_signature = ""
+        self._failed_signature = ""
+        self._vectors_signature = ""
+        self._semantic_vectors = None
+        self._semantic_task: asyncio.Task | None = None
+        self._embedding_model = None
+        self._encoder_lock = threading.RLock()
 
     def _private_key(self) -> Path:
         """Validate the *local private key* before any network access."""
@@ -211,12 +240,14 @@ class KnowledgeBase:
             not force and self.passages
             and time.monotonic() - self._checked_at < self.refresh_seconds
         ):
+            self._schedule_semantic_build()
             return
         async with self._lock:
             if (
                 not force and self.passages
                 and time.monotonic() - self._checked_at < self.refresh_seconds
             ):
+                self._schedule_semantic_build()
                 return
             self._checked_at = time.monotonic()
             try:
@@ -234,6 +265,123 @@ class KnowledgeBase:
                         pass
                 if not self.passages:
                     raise RuntimeError(self.last_error) from exc
+            # Never hold up Discord answers while the ONNX model downloads or
+            # the index is built. Plain keyword search is immediately usable.
+            self._schedule_semantic_build()
+
+    def _schedule_semantic_build(self) -> None:
+        if not self.semantic_enabled or not self.passages:
+            return
+        if self._vectors_signature == self._semantic_signature and self._semantic_vectors is not None:
+            return
+        if self._semantic_task is not None and not self._semantic_task.done():
+            return
+        # Don't retry failed model downloads on every chat message; the next
+        # bot restart can retry, or a successful repository update may retry.
+        if self.semantic_status == "unavailable" and self._failed_signature == self._semantic_signature:
+            return
+        self.semantic_status = "building"
+        self._semantic_task = asyncio.create_task(self._build_semantic_async())
+
+    async def _build_semantic_async(self) -> None:
+        # Snapshot immutable Passage objects so a Git refresh cannot cause an
+        # index to be attached to a different version of the repository.
+        signature = self._semantic_signature
+        passages = tuple(self.passages)
+        try:
+            await asyncio.to_thread(self._build_semantic_sync, signature, passages)
+        except Exception as exc:
+            if self._semantic_signature == signature:
+                self._failed_signature = signature
+                self.semantic_status = "unavailable"
+                self.semantic_last_error = f"{type(exc).__name__}: {str(exc)[:260]}"
+                print(f"KB semantic search unavailable (keyword fallback active): {self.semantic_last_error}")
+        else:
+            if self._semantic_signature == signature:
+                self.semantic_status = "ready"
+                self.semantic_last_error = ""
+        finally:
+            if self._semantic_signature != signature:
+                # Git updated while the older document set was embedding.
+                self._semantic_task = None
+                self._schedule_semantic_build()
+
+    def _get_embedding_model(self):
+        with self._encoder_lock:
+            if self._embedding_model is None:
+                # Lazy import keeps keyword-only mode functional even if the
+                # optional FastEmbed package isn't installed / CPU is unsupported.
+                from fastembed import TextEmbedding
+                self.embedding_cache_dir.mkdir(parents=True, exist_ok=True)
+                self._embedding_model = TextEmbedding(
+                    model_name=self.embedding_model_name,
+                    cache_dir=str(self.embedding_cache_dir),
+                    threads=self.embedding_threads,
+                    providers=["CPUExecutionProvider"],
+                )
+            return self._embedding_model
+
+    @staticmethod
+    def _normalize_vectors(vectors):
+        import numpy as np
+        array = np.asarray(vectors, dtype=np.float32)
+        if array.ndim != 2 or not len(array) or not np.isfinite(array).all():
+            raise ValueError("Invalid embeddings returned from model")
+        lengths = np.linalg.norm(array, axis=1, keepdims=True)
+        return np.ascontiguousarray(array / np.maximum(lengths, 1e-12))
+
+    def _build_semantic_sync(self, signature: str, passages: tuple[Passage, ...]) -> None:
+        # Single ONNX encoder for document indexing and interactive queries.
+        # 1 thread + 8-document batches lowers memory peaks on a 1 GB VPS.
+        with self._encoder_lock:
+            model = self._get_embedding_model()
+            import numpy as np
+            inputs = [f"{p.path}\n{p.title}\n{p.content}" for p in passages]
+            embeddings = list(model.embed(inputs, batch_size=self.embedding_batch_size))
+            if len(embeddings) != len(passages):
+                raise ValueError("Embedding count didn't match document count")
+            vectors = self._normalize_vectors(embeddings)
+            if self._semantic_signature != signature:
+                return
+            self._semantic_vectors = vectors
+            self._vectors_signature = signature
+            # Write the reusable local index atomically, without pickle.
+            self.embedding_index_path.parent.mkdir(parents=True, exist_ok=True)
+            temp_path = None
+            try:
+                with tempfile.NamedTemporaryFile(
+                    prefix="semantic-", suffix=".npz",
+                    dir=self.embedding_index_path.parent, delete=False
+                ) as handle:
+                    temp_path = Path(handle.name)
+                    np.savez_compressed(handle, vectors=vectors, signature=np.array(signature),
+                                        model=np.array(self.embedding_model_name))
+                if self._semantic_signature == signature:
+                    temp_path.replace(self.embedding_index_path)
+            finally:
+                if temp_path is not None:
+                    temp_path.unlink(missing_ok=True)
+
+    def _load_semantic_cache(self) -> bool:
+        if not self.semantic_enabled or not self.embedding_index_path.exists():
+            return False
+        import numpy as np
+        try:
+            with np.load(self.embedding_index_path, allow_pickle=False) as cache:
+                if (cache["signature"].item() != self._semantic_signature
+                        or cache["model"].item() != self.embedding_model_name):
+                    return False
+                vectors = cache["vectors"]
+                if (vectors.ndim != 2 or vectors.shape[0] != len(self.passages)
+                        or vectors.shape[1] > 2048 or not np.isfinite(vectors).all()):
+                    return False
+                self._semantic_vectors = np.ascontiguousarray(vectors, dtype=np.float32)
+                self._vectors_signature = self._semantic_signature
+                self.semantic_status = "ready"
+                return True
+        except (KeyError, ValueError, OSError) as exc:
+            print(f"Invalid cached semantic index; rebuilding: {type(exc).__name__}")
+        return False
 
     def _index_folder(self) -> None:
         all_files: dict[str, Path] = {}
@@ -311,6 +459,21 @@ class KnowledgeBase:
             doc_words[key].update(words(key))
             doc_words[key].update(words(self.routes.get(key, "")))
         self.doc_words = dict(doc_words)
+        digest = hashlib.sha256()
+        digest.update(b"mgr-semantic-v1\0")
+        digest.update(self.embedding_model_name.encode("utf-8"))
+        for p in passages:
+            digest.update(json.dumps(
+                [p.path, p.start, p.end, p.title, p.source_kind, p.content],
+                ensure_ascii=False, separators=(",", ":")
+            ).encode("utf-8"))
+        signature = digest.hexdigest()
+        if signature != self._semantic_signature:
+            self._semantic_signature = signature
+            self._semantic_vectors = None
+            self._vectors_signature = ""
+            self.semantic_status = "pending" if self.semantic_enabled else "disabled"
+            self._load_semantic_cache()
 
     @staticmethod
     def _make_passages(path: str, lines: list[str], kind: str, page: int = 0) -> list[Passage]:
@@ -343,7 +506,8 @@ class KnowledgeBase:
                                       text, title, kind))
         return chunks
 
-    def search(self, question: str) -> list[SearchHit]:
+    def _lexical_results(self, question: str) -> list[SearchHit]:
+        """Existing document/heading/AGENTS-aware keyword ranking."""
         query = list(dict.fromkeys(words(question)))
         if not query or not self.passages:
             return []
@@ -353,7 +517,6 @@ class KnowledgeBase:
             df[term] = sum(term in token_set for token_set in self.doc_words.values())
         idf = {term: math.log(1 + (total_docs - df[term] + .5) / (df[term] + .5))
                for term in query}
-
         results: list[SearchHit] = []
         for passage in self.passages:
             route_count = Counter(words(self.routes.get(passage.path, "")))
@@ -368,7 +531,6 @@ class KnowledgeBase:
                 if not present:
                     continue
                 match_count += 1
-                # Filename and AGENTS.md route descriptions carry extra weight.
                 score += idf[term] * (
                     min(count, 3) * 1.0 +
                     min(head_count[term], 2) * 2.0 +
@@ -376,44 +538,88 @@ class KnowledgeBase:
                     min(route_count[term], 2) * 3.0
                 )
             if match_count:
-                score *= (1 + 0.17 * (match_count - 1))
-                # Rank an actual target document over a navigation guide unless
-                # the question explicitly concerns AGENTS.md itself.
+                score *= 1 + 0.17 * (match_count - 1)
                 if passage.path.lower().endswith("agents.md") and "agent" not in query:
                     score *= 0.65
                 results.append(SearchHit(passage, score))
-
-        # AGENTS.md is a routing guide: don't pay to resend it if a target
-        # document was retrieved. Use the guide itself only for queries about
-        # AGENTS.md or when it is the sole matching source.
-        if "agent" not in query and any(
-            hit.passage.path.rsplit("/", 1)[-1].lower() != "agents.md"
-            for hit in results
-        ):
-            results = [
-                hit for hit in results
-                if hit.passage.path.rsplit("/", 1)[-1].lower() != "agents.md"
-            ]
         results.sort(key=lambda hit: hit.score, reverse=True)
+        return results
+
+    def _semantic_results(self, question: str) -> list[tuple[Passage, float]]:
+        if (not self.semantic_enabled or self._semantic_vectors is None
+                or self.semantic_status == "unavailable"
+                or self._vectors_signature != self._semantic_signature):
+            return []
+        with self._encoder_lock:
+            try:
+                import numpy as np
+                model = self._get_embedding_model()
+                query_vectors = list(model.embed([question], batch_size=1))
+                if len(query_vectors) != 1:
+                    return []
+                query_vec = self._normalize_vectors(query_vectors)[0]
+                similarities = self._semantic_vectors @ query_vec
+            except Exception as exc:
+                # A failed local inference must never break trivia or Claude.
+                self.semantic_last_error = f"Semantic query failed: {type(exc).__name__}"
+                self.semantic_status = "unavailable"
+                self._failed_signature = self._semantic_signature
+                print(f"KB semantic query failed (keyword fallback): {exc}")
+                return []
+        # Avoid presenting entirely irrelevant documents simply because every
+        # embedding search has a mathematical best match.
+        ranked = np.argsort(-similarities)[:32]
+        return [
+            (self.passages[int(i)], float(similarities[i]))
+            for i in ranked if similarities[i] >= 0.38
+        ]
+
+    def search(self, question: str, *, deep: bool = False) -> list[SearchHit]:
+        """Hybrid rank fusion: lexical precision + semantic synonym matching.
+
+        Use reciprocal rank fusion instead of comparing incompatible raw
+        cosine-similarity and TF/IDF scores. This intentionally keeps filename
+        and exact-word matches important for technical part numbers and rules.
+        """
+        lexical = self._lexical_results(question)
+        semantic = self._semantic_results(question)
+        candidates: dict[Passage, float] = defaultdict(float)
+        for rank, hit in enumerate(lexical[:40], 1):
+            candidates[hit.passage] += 1.45 / (24 + rank)
+        for rank, (passage, similarity) in enumerate(semantic, 1):
+            candidates[passage] += 1.65 * min(1.0, similarity / 0.65) / (24 + rank)
+        if not candidates:
+            return []
+        ranked = sorted(candidates.items(), key=lambda item: item[1], reverse=True)
+        if "agent" not in words(question) and any(
+            p.path.rsplit("/", 1)[-1].lower() != "agents.md" for p, _ in ranked
+        ):
+            ranked = [(p, score) for p, score in ranked
+                      if p.path.rsplit("/", 1)[-1].lower() != "agents.md"]
+        max_passages = DEEP_MAX_PASSAGES if deep else MAX_PASSAGES
+        max_files = DEEP_MAX_FILES if deep else MAX_FILES
+        max_chars = DEEP_MAX_DOC_CHARS if deep else MAX_DOC_CHARS
         selected: list[SearchHit] = []
         file_hits: Counter[str] = Counter()
         used_chars = 0
-        for hit in results:
-            path = hit.passage.path
-            if file_hits[path] >= 2:
+        for passage, score in ranked:
+            if file_hits[passage.path] >= (3 if deep else 2):
                 continue
-            if path not in file_hits and len(file_hits) >= MAX_FILES:
+            if passage.path not in file_hits and len(file_hits) >= max_files:
                 continue
-            # Prefix/location metadata costs tokens as well.
-            estimated_chars = len(hit.passage.content) + len(path) + 100
-            if used_chars + estimated_chars > MAX_DOC_CHARS:
+            estimate = len(passage.content) + len(passage.path) + 100
+            if used_chars + estimate > max_chars:
                 continue
-            selected.append(hit)
-            file_hits[path] += 1
-            used_chars += estimated_chars
-            if len(selected) >= MAX_PASSAGES:
+            selected.append(SearchHit(passage, score))
+            file_hits[passage.path] += 1
+            used_chars += estimate
+            if len(selected) >= max_passages:
                 break
         return selected
+
+    async def search_async(self, question: str, *, deep: bool = False) -> list[SearchHit]:
+        """Offload local ONNX inference so Discord reaction events stay responsive."""
+        return await asyncio.to_thread(self.search, question, deep=deep)
 
     def excerpts(self, hits: list[SearchHit]) -> str:
         return "\n\n".join(

@@ -1,113 +1,71 @@
-# Mean Green Racing Discord knowledge bot (SSH deploy key)
+# Mean Green Bot — Hybrid Search Update (Linux / 1 GB RAM)
 
-This version connects to `Mean-Green-Racing/fsae-kb` **using SSH and a repository deploy key**, not a GitHub personal access token. It retains the local `AGENTS.md`-guided retrieval, automatic Git updates, Haiku 5.5 responses, per-user cooldown, and local $4.75/month spending guard.
+**Baseline:** Uses the newest FSAE trivia update (reaction answers, 300 `fsae_trivia.json` questions, 50/50 FSAE/vehicle mix), and the existing GitHub-SSH deploy-key integration and SQLite Claude budget tracking. The trivia, scores, reaction formatting, channel access, `!` commands, and spending limit are retained.
 
-## 1. Replace the bot files
+## Install without losing your settings or saved data
 
-The ZIP contains all necessary files. If installing into your existing working `mgr bot` folder, stop the bot and **replace `bot.py` and `kb.py` together**. Also copy `check_github.py` for the connection test. Keep your existing `budget.py`, `prompt.txt`, `.env`, and `data/` folder; do not overwrite your own `.env`.
+1. Stop the currently running bot.
+2. **Back up** your existing bot directory, especially `.env`, `prompt.txt`, and `data/`.
+3. Replace `bot.py` and **`kb.py`** with the two files from this update. Keep your existing `.env`, `prompt.txt`, `data/`, and SSH private key. The ZIP includes compatible `budget.py`, `trivia.py`, `fsae_trivia.json`, and `check_github.py` for a complete deployment, but you don't have to overwrite unchanged files.
+4. If you haven't already installed the dependencies, run these commands on Linux in your bot directory:
 
-```bash
-cd "/Users/school/Downloads/mgr bot"
-python3 -m pip install -r requirements.txt
-```
+   ```bash
+   sudo apt-get update
+   sudo apt-get install -y python3-venv git
+   python3 -m venv .venv
+   source .venv/bin/activate
+   python -m pip install --upgrade pip
+   python -m pip install --no-cache-dir -r requirements.txt
+   ```
 
-## 2. Set up the private half of the deploy key on your Mac
+   On a very small VPS, run package installation with no other heavy processes. On Ubuntu/Debian with externally managed Python, the virtual environment avoids `externally-managed-environment` errors.
 
-GitHub stores the **public half** of a deploy key in repository Settings → Deploy keys. The bot must use the *matching private key file* on your Mac. GitHub cannot provide the private half to you. If the deploy key already exists in GitHub and you have the matching private key, copy that private file safely to `~/.ssh/fsae_kb_deploy` and skip key generation. Never upload the private key to Discord, GitHub, or Claude.
+5. You can leave `.env` unchanged. Defaults are already safe for 1 GB Linux: semantic search on, **one ONNX CPU thread**, eight documents per batch. If you want explicit options, add:
 
-If you **do not have** the matching private key, generate a new pair locally:
+   ```dotenv
+   SEMANTIC_SEARCH=1
+   EMBEDDING_THREADS=1
+   EMBEDDING_BATCH_SIZE=8
+   ```
 
-```bash
-mkdir -p "$HOME/.ssh"
-chmod 700 "$HOME/.ssh"
-ssh-keygen -t ed25519 -f "$HOME/.ssh/fsae_kb_deploy" -C "mgr-discord-kb" -N ""
-chmod 600 "$HOME/.ssh/fsae_kb_deploy"
-cat "$HOME/.ssh/fsae_kb_deploy.pub"
-```
+6. **Optional, recommended for first setup:** while the bot is stopped, build its local embedding index:
 
-Add the **public `.pub` key text** to `https://github.com/Mean-Green-Racing/fsae-kb` → Settings → Deploy keys → Add deploy key. Keep **Allow write access unchecked**. You must have permission to modify the repository's deploy keys. If the repo already has an unrelated deploy key, you may add a separate one (each key can only be used for one repository).
+   ```bash
+   python warm_search.py
+   ```
 
-Security note: `-N ""` creates a key without a passphrase for unattended operation; protect the Mac and the key file. A passphrase-protected key can work if it has been unlocked in the SSH agent before starting the bot.
+   This downloads an approximately **67 MB** model (plus tokenizer/supporting files) to `data/embedding_models/` and saves vectors to `data/semantic_index.npz`. The first download needs internet; later launches reuse the files. It connects to **your existing** private GitHub KB using your SSH deploy key; the embeddings are calculated locally. Never commit private `.env`, SSH key, or `data/`.
 
-## 3. Establish GitHub SSH host trust
+7. Run `python bot.py`. Check `!kb status`: **`Search: hybrid`** means semantic search is usable; **`keyword (building)`** means it's still indexing, and **`keyword (unavailable)`** means the model or dependency failed (see Linux terminal logs). Searches keep working in keyword mode even without FastEmbed.
 
-The code deliberately uses `StrictHostKeyChecking=yes` and won't automatically accept an unknown server. Run this interactive test **once** from your Mac terminal:
+## What's changed
 
-```bash
-ssh -T -i "$HOME/.ssh/fsae_kb_deploy" -o IdentitiesOnly=yes git@github.com
-```
+- `kb.py` keeps the existing filename/heading/text keyword scoring and merges it with 384-dimensional local semantic similarity using rank fusion. The model is the small ONNX `BAAI/bge-small-en-v1.5`, not a big PyTorch model. It's a practical option for a 1 GB Linux VPS but absolute peak memory depends on the OS and other running services.
+- Private KB documents are **never transmitted to any embedding API**. FastEmbed downloads **public model weights** once. The documents still go to Claude as selected excerpt text when someone uses `!ask` or mentions the bot, as they did before.
+- Embeddings are **cached** on disk, validated against a SHA-256 digest of document contents, and rebuilt **only when indexed contents or the model configuration changes**. Initial indexing happens in the background, so Discord can still answer in keyword-only mode until ready.
+- Questions like "What caused MGR to shut down?" can now match docs saying "dissolved during COVID" even with little literal overlap.
+- `bot.py` offloads embedding inference to a worker thread so long queries don't freeze trivia reactions or the Discord connection.
+- General open-ended requests ("why are we struggling?", "how can we improve?", "analyze our history") may retrieve from **up to 8 excerpts across 5 files**. Ordinary questions remain limited to **5 excerpts across 3 files** to limit Anthropic token consumption.
+- `CORE_RULES` now prioritizes a useful answer, diagnosis, and practical steps while separating **confirmed evidence** from **inference**. It still avoids guessing rules or specs, uses excerpt citations, and keeps `prompt.txt` as the personality source.
+- No new external embedding bill, no new Discord permissions, and no changes to the $4.75 spending guard or the trivia database.
 
-If SSH prompts to trust `github.com`, **verify the displayed ED25519 fingerprint** against GitHub's official documentation before answering `yes`. At the time of writing, GitHub's documented Ed25519 fingerprint is:
+## Commands (unchanged)
 
-```text
-SHA256:+DiY3wvvV6TuJJhbpZisF/zLDA0zPMSvHdkr4UvCOqU
-```
+`!trivia`, `!trivia fsae`, `!trivia vehicles`, `!trivia leaderboard`, `!leaderboard`, `!leaderboard all`, `!usage`, `!kb status`, `!kb find <topic>`, `!kb refresh` (server managers), `!ask <question>`, and bot mentions.
 
-Source: https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints
+`!kb refresh` refreshes the GitHub mirror and, if files changed, schedules re-indexing. A refresh response may appear before local semantic indexing finishes; `!kb status` shows progress.
 
-An SSH reply such as "successfully authenticated, but GitHub does not provide shell access" indicates SSH authentication succeeded. `ssh -T` can exit with code 1 even on success.
+## Files and troubleshooting
 
-## 4. Configure `.env`
+- **Persistent private files (keep):** `.env`, `prompt.txt`, `data/usage.sqlite3`, `data/trivia.sqlite3`, `data/fsae-kb/`, `data/embedding_models/`, `data/semantic_index.npz`, and your deploy key outside the repo.
+- **Missing `fastembed` or unsupported CPU:** `!kb status` shows keyword fallback; reinstall requirements in your venv. Test with `python warm_search.py`.
+- **Low memory:** start with `EMBEDDING_BATCH_SIZE=4`, `EMBEDDING_THREADS=1`. If the host still runs out of RAM, use `SEMANTIC_SEARCH=0` to continue in keyword-only mode. On some 1 GB machines, enabling a swap file may help initial setup, but it's not a substitute for adequate RAM.
+- **Model cannot download:** a first-run public Hugging Face/model-host download is required. You can download once on a connected machine and transfer `data/embedding_models/`, or temporarily use keyword fallback.
+- **Model is loaded per process:** don't run `warm_search.py` simultaneously with `bot.py` on a 1 GB machine.
+- **Prompts:** the existing `bot.py` permits a max of 2,100 characters in `prompt.txt` and now reports that actual limit in its error message.
 
-Keep your existing Discord and Anthropic API keys. Add or update the following lines:
+## Tests
 
-```dotenv
-DISCORD_TOKEN=YOUR_EXISTING_DISCORD_TOKEN
-ANTHROPIC_API_KEY=YOUR_EXISTING_ANTHROPIC_API_KEY
-ALLOWED_GUILD_ID=1562934894852579511
+`python3 -m unittest discover -s tests -v`
 
-GITHUB_DEPLOY_KEY_PATH=~/.ssh/fsae_kb_deploy
-REPO_URL=git@github.com:Mean-Green-Racing/fsae-kb.git
-REPO_BRANCH=main
-SYNC_INTERVAL_SECONDS=600
-```
-
-If you previously configured `GITHUB_TOKEN=`, delete that old line; it is no longer used. If you forget to change your old HTTPS `REPO_URL`, the script automatically translates a recognized GitHub HTTPS URL to SSH. **Point `GITHUB_DEPLOY_KEY_PATH` to the private file, never the `.pub` file.** The bot checks for secure private-key permissions (`chmod 600` on macOS/Linux).
-
-If you moved the bot to a different Discord server, set that server's ID in `ALLOWED_GUILD_ID`. You may optionally restrict it to particular channels with `ALLOWED_CHANNEL_IDS=id1,id2`.
-
-## 5. Verify the deploy key without Claude credits
-
-```bash
-python3 check_github.py
-```
-
-This runs `git ls-remote` over SSH, confirms access to `main`, and **uses no Claude API tokens**. Successful output should look like:
-
-```text
-GitHub SSH deploy-key authentication successful for git@github.com:Mean-Green-Racing/fsae-kb.git
-Branch main: <commit-hash>
-```
-
-Then start the real bot:
-
-```bash
-python3 bot.py
-```
-
-Files are cloned into `data/fsae-kb/` and refreshed approximately every 10 minutes when requests arrive. If the folder already contains a checkout of the same repo with an HTTPS origin, the bot safely updates its local `origin` to SSH before fetching. It refuses to silently replace an unrelated Git remote.
-
-## 6. Discord commands and retrieval behavior
-
-- `@Mean Green Bot kb status`: indexed files, current commit and estimated monthly API spend, free.
-- `@Mean Green Bot kb find precharge`: local AGENTS.md-guided document search, free.
-- `@Mean Green Bot kb refresh`: force a repository fetch; requires Manage Server permission.
-- `@Mean Green Bot What are our precharge requirements?`: retrieves up to five short passages from at most three KB files, then asks Claude and includes source links.
-
-Local Git fetch, indexing, `AGENTS.md` routing, and text search use **zero Claude tokens**. Only the question and selected excerpts are sent to Anthropic. By default the bot limits normal output to 850 tokens, enforces a 15-second per-user cooldown, and tracks API consumption in `data/usage.sqlite3`. A local estimated spending guard stops around $4.75/month; also set a **$5 spend limit in your Anthropic workspace**, because local tracking cannot cover other API use or all billing conditions.
-
-The bot intentionally does not push changes to GitHub. Do not hand-edit the cache under `data/fsae-kb/`, because an update resets the mirror to the remote branch. The key remains on your machine; it is never sent to Claude. For a private KB, restrict access to Discord channels authorized to receive its contents.
-
-## 7. Troubleshooting
-
-| Error | What to check |
-|---|---|
-| `Set GITHUB_DEPLOY_KEY_PATH` | Add the local *private* key path to `.env`. |
-| `Deploy private key not found` | Confirm the exact filename under `~/.ssh/`. |
-| `unsafe permissions` | Run `chmod 600 ~/.ssh/fsae_kb_deploy`. |
-| `Host key verification failed` | Establish SSH trust after checking GitHub's official fingerprint. |
-| `Permission denied (publickey)` | Verify the `.pub` key is registered in the correct repository's Deploy keys and matches your private key. |
-| `Repository not found` | Verify the SSH repository URL and permission to read that repo. |
-| No documents found | Run `@Mean Green Bot kb refresh`, then `kb status` and `kb find <topic>`; inspect AGENTS.md and supported file types. |
-
-Unit tests can be run with `python3 -m pytest` after `python3 -m pip install pytest`.
+Offline tests cover the 50/50 trivia behavior, trivia data format, unchanged scores, index persistence/invalidation, hybrid fusion, fallback if local model is unavailable, and deeper retrieval. Tests use a deterministic fake semantic encoder because external model weights and live Discord credentials are not bundled. **Real model downloads, Linux memory usage, and live Discord interactions must be checked on your host.**
