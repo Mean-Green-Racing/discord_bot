@@ -268,10 +268,10 @@ async def on_message(message: discord.Message):
         if not leaders:
             await send_safe(message, "No Claude questions tracked yet this period.")
             return
-        lines = [f"**MGR CLAUDE TOKEN LEADERBOARD — {label}**"]
+        lines = [f"**MGR CLAUDE TOKEN LEADERBOARD - {label}**"]
         for i, row in enumerate(leaders, 1):
             lines.append(
-                f"{i}. <@{row['user_id']}> — **{row['total_tokens']:,} tokens** "
+                f"{i}. <@{row['user_id']}> - **{row['total_tokens']:,} tokens** "
                 f"({row['input_tokens']:,} in / {row['output_tokens']:,} out) "
                 f"· {row['questions']} prompts · ~${row['estimated_usd']:.4f}"
             )
@@ -288,7 +288,7 @@ async def on_message(message: discord.Message):
         period = "all time" if all_time else f"{budget_month()} UTC"
         await send_safe(
             message,
-            f"**Your Claude usage — {period}**\n"
+            f"**Your Claude usage - {period}**\n"
             f"**{data['total_tokens']:,} tokens** "
             f"({data['input_tokens']:,} in / {data['output_tokens']:,} out)\n"
             f"{data['questions']} question(s) · {data['calls']} completed API call(s) "
@@ -302,14 +302,14 @@ async def on_message(message: discord.Message):
         await send_safe(
             message,
             "**MGR BOT COMMANDS**\n"
-            "`!trivia [easy|medium|hard]` — alternating FSAE/vehicle trivia (react 🇦 🇧 🇨 🇩)\n"
-            "`!trivia fsae` / `!trivia vehicles` — choose a source\n"
-            "`!trivia leaderboard` — trivia points\n"
-            "`!leaderboard` / `!leaderboard all` — monthly / all-time Claude token rankings\n"
-            "`!usage` / `!usage all` — your token usage\n"
-            "`!kb ping` · `!kb status` · `!kb find <topic>` — free KB tools\n"
-            "`!kb refresh` — server managers only\n"
-            "`!ask <question>` or @mention the bot — ask Claude",
+            "`!trivia [easy|medium|hard]` - alternating FSAE/vehicle trivia (react 🇦 🇧 🇨 🇩)\n"
+            "`!trivia fsae` / `!trivia vehicles` - choose a source\n"
+            "`!trivia leaderboard` - trivia points\n"
+            "`!leaderboard` / `!leaderboard all` - monthly / all-time Claude token rankings\n"
+            "`!usage` / `!usage all` - your token usage\n"
+            "`!kb ping` · `!kb status` · `!kb find <topic>` - free KB tools\n"
+            "`!kb refresh` - server managers only\n"
+            "`!ask <question>` or @mention the bot - ask Claude",
         )
         return
 
