@@ -66,6 +66,7 @@ intents.message_content = True
 bot = discord.Client(intents=intents)
 trivia = TriviaGame(
     ROOT / "data" / "trivia.sqlite3",
+    fsae_questions_path=ROOT / "fsae_trivia.json",
     timeout_seconds=int(os.getenv("TRIVIA_TIMEOUT_SECONDS", "15")),
     tick_seconds=int(os.getenv("TRIVIA_COUNTDOWN_STEP", "5")),
 )
@@ -301,7 +302,8 @@ async def on_message(message: discord.Message):
         await send_safe(
             message,
             "**MGR BOT COMMANDS**\n"
-            "`!trivia [easy|medium|hard]` — play vehicle trivia (react 🇦 🇧 🇨 🇩)\n"
+            "`!trivia [easy|medium|hard]` — alternating FSAE/vehicle trivia (react 🇦 🇧 🇨 🇩)\n"
+            "`!trivia fsae` / `!trivia vehicles` — choose a source\n"
             "`!trivia leaderboard` — trivia points\n"
             "`!leaderboard` / `!leaderboard all` — monthly / all-time Claude token rankings\n"
             "`!usage` / `!usage all` — your token usage\n"

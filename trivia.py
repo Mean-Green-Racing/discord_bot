@@ -1,7 +1,9 @@
-"""Vehicle trivia with answers via reactions on the ORIGINAL Discord message.
+"""FSAE / vehicle trivia with answers via reactions on the ORIGINAL Discord message.
 
 Commands (no @mention necessary):
-  !trivia [easy|medium|hard]  Start a 60-second multiple-choice round
+  !trivia [easy|medium|hard]  Alternate FSAE / Vehicles rounds
+  !trivia fsae [difficulty]  Only local Mean Green Racing / FSAE questions
+  !trivia vehicles [difficulty] Only Open Trivia DB vehicle questions
   !trivia score              Show your score
   !trivia leaderboard        Show server leaderboard
   !trivia skip               End the round (starter or Manage Server)
@@ -14,6 +16,7 @@ from __future__ import annotations
 
 import asyncio
 import html
+import hashlib
 import json
 import math
 import random
@@ -53,6 +56,7 @@ class Round:
     correct_letter: str
     starter: int
     guild_id: int
+    source: str = "vehicles"
     attempts: set[int] = field(default_factory=set)
     wrong_users: list[int] = field(default_factory=list)
     deadline: float = 0.0
@@ -65,10 +69,15 @@ class Round:
 
 
 class TriviaGame:
-    def __init__(self, db_path: str | Path, timeout_seconds: int = 15, tick_seconds: int = 5):
+    def __init__(self, db_path: str | Path, timeout_seconds: int = 15, tick_seconds: int = 5,
+                 fsae_questions_path: str | Path | None = None):
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self.timeout_seconds = max(10, int(timeout_seconds))
+        self.fsae_questions_path = (Path(fsae_questions_path) if fsae_questions_path
+                                    else Path(__file__).with_name("fsae_trivia.json"))
+        self._fsae_cache: list[dict] = []
+        self._fsae_mtime: int | None = None
         # 5-second updates, rather than 1-second edits, avoid unnecessary Discord API calls.
         self.tick_seconds = max(2, int(tick_seconds))
         self.active: dict[int, Round] = {}
@@ -101,6 +110,18 @@ class TriviaGame:
                 correct INTEGER NOT NULL DEFAULT 0,
                 attempts INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY (guild_id, user_id)
+            )""")
+            # A separate history keeps FSAE questions from repeating until
+            # the selected difficulty's pool has been exhausted.
+            con.execute("""CREATE TABLE IF NOT EXISTS fsae_seen (
+                question_key TEXT PRIMARY KEY,
+                difficulty TEXT NOT NULL
+            )""")
+            # Next source persists across restarts. Alternating gives an exact
+            # 50/50 split across every pair of default rounds per server.
+            con.execute("""CREATE TABLE IF NOT EXISTS trivia_source_rotation (
+                guild_id INTEGER PRIMARY KEY,
+                next_source TEXT NOT NULL
             )""")
 
     def _has_unused(self, difficulty: str | None) -> bool:
@@ -191,7 +212,7 @@ class TriviaGame:
                 con.execute("UPDATE questions SET used=1 WHERE id=?", (row["id"],))
         return dict(row) if row is not None else None
 
-    async def _choose_question(self, difficulty: str | None, guild_id: int, user_id: int) -> Round | None:
+    async def _choose_vehicle_question(self, difficulty: str | None, guild_id: int, user_id: int) -> Round | None:
         row = self._take_cached(difficulty)
         if row is None:
             try:
@@ -208,7 +229,108 @@ class TriviaGame:
         random.shuffle(values)
         choices = dict(zip(LETTERS, values))
         right_letter = next(letter for letter, value in choices.items() if value == row["correct"])
-        return Round(row["question"], row["difficulty"], choices, right_letter, user_id, guild_id)
+        return Round(row["question"], row["difficulty"], choices, right_letter,
+                     user_id, guild_id, source="vehicles")
+
+    def _fsae_bank(self) -> list[dict]:
+        """Load the flat JSON question bank on first use and after file edits."""
+        try:
+            mtime = self.fsae_questions_path.stat().st_mtime_ns
+        except OSError as exc:
+            raise RuntimeError(f"Missing FSAE question file: {self.fsae_questions_path}") from exc
+        if mtime == self._fsae_mtime:
+            return self._fsae_cache
+        try:
+            raw = json.loads(self.fsae_questions_path.read_text(encoding="utf-8"))
+        except (OSError, ValueError) as exc:
+            raise RuntimeError(f"Cannot load FSAE trivia JSON: {exc}") from exc
+        if not isinstance(raw, list):
+            raise RuntimeError("FSAE trivia JSON must be a flat array of question objects")
+        parsed = []
+        for item in raw:
+            if not isinstance(item, dict) or item.get("difficulty") not in POINTS:
+                continue
+            q = item.get("question")
+            choices = item.get("choices")
+            ix = item.get("answerIndex")
+            if not (isinstance(q, str) and 0 < len(q) <= 450
+                    and isinstance(choices, list) and len(choices) == 4
+                    and all(isinstance(c, str) and 0 < len(c) <= 140 for c in choices)
+                    and len({c.casefold() for c in choices}) == 4
+                    and type(ix) is int and 0 <= ix <= 3):
+                continue
+            parsed.append(item)
+        if not parsed:
+            raise RuntimeError("No valid FSAE trivia questions in the JSON file")
+        self._fsae_mtime = mtime
+        self._fsae_cache = parsed
+        return parsed
+
+    @staticmethod
+    def _fsae_key(item: dict) -> str:
+        return hashlib.sha256(
+            (item["difficulty"] + "\0" + item["question"]).encode("utf-8")
+        ).hexdigest()
+
+    def _choose_fsae_question(self, difficulty: str | None,
+                              guild_id: int, user_id: int) -> Round | None:
+        pool = [item for item in self._fsae_bank()
+                if difficulty is None or item["difficulty"] == difficulty]
+        if not pool:
+            return None
+        with closing(self._connect()) as con, con:
+            seen = {row[0] for row in con.execute("SELECT question_key FROM fsae_seen")}
+            unseen = [item for item in pool if self._fsae_key(item) not in seen]
+            if not unseen:
+                # Recycle only after all eligible questions have appeared.
+                if difficulty is None:
+                    con.execute("DELETE FROM fsae_seen")
+                else:
+                    con.execute("DELETE FROM fsae_seen WHERE difficulty=?", (difficulty,))
+                unseen = pool
+            selected = random.choice(unseen)
+            con.execute("INSERT OR REPLACE INTO fsae_seen(question_key,difficulty) VALUES(?,?)",
+                        (self._fsae_key(selected), selected["difficulty"]))
+        answers = list(selected["choices"])
+        correct_answer = answers[selected["answerIndex"]]
+        random.shuffle(answers)
+        choices = dict(zip(LETTERS, answers))
+        correct_letter = next(letter for letter, value in choices.items()
+                              if value == correct_answer)
+        return Round(selected["question"], selected["difficulty"], choices,
+                     correct_letter, user_id, guild_id, source="fsae")
+
+    def _next_source(self, guild_id: int) -> str:
+        """Flip between FSAE and Vehicles after each automatic question request."""
+        with closing(self._connect()) as con, con:
+            row = con.execute("SELECT next_source FROM trivia_source_rotation WHERE guild_id=?",
+                              (guild_id,)).fetchone()
+            source = row[0] if row is not None else "fsae"
+            following = "vehicles" if source == "fsae" else "fsae"
+            con.execute("""INSERT INTO trivia_source_rotation(guild_id,next_source)
+                VALUES(?,?) ON CONFLICT(guild_id) DO UPDATE SET
+                next_source=excluded.next_source""", (guild_id, following))
+        return source
+
+    async def _choose_question(self, difficulty: str | None, guild_id: int,
+                               user_id: int, source: str | None = None) -> Round | None:
+        """Alternate bank/API in normal mode, falling back if one is unavailable."""
+        preferred = source or self._next_source(guild_id)
+        sources = [preferred] if source else [preferred, "vehicles" if preferred == "fsae" else "fsae"]
+        failures = []
+        for candidate in sources:
+            try:
+                game = (self._choose_fsae_question(difficulty, guild_id, user_id)
+                        if candidate == "fsae"
+                        else await self._choose_vehicle_question(difficulty, guild_id, user_id))
+            except RuntimeError as exc:
+                failures.append(f"{candidate}: {exc}")
+                continue
+            if game is not None:
+                return game
+        if failures:
+            raise RuntimeError("; ".join(failures))
+        return None
 
     def _record_answer(self, guild_id: int, user_id: int, correct: bool, points: int):
         with closing(self._connect()) as con, con:
@@ -228,7 +350,7 @@ class TriviaGame:
             for letter, answer in game.options.items()
         )
         content = (
-            f"**VEHICLE TRIVIA — {game.difficulty.upper()}** "
+            f"**{'FSAE TRIVIA' if game.source == 'fsae' else 'VEHICLE TRIVIA'} — {game.difficulty.upper()}** "
             f"({POINTS[game.difficulty]} points)\n\n"
             f"{safe(game.question)}\n\n{options}\n\n"
         )
@@ -265,7 +387,8 @@ class TriviaGame:
                 content += f"...and {hidden_count} earlier wrong guess(es).\n"
             content += "\n".join(f"<@{user_id}> got it wrong." for user_id in recent)
 
-        content += f"\n\n*{ATTRIBUTION}*"
+        if game.source == "vehicles":
+            content += f"\n\n*{ATTRIBUTION}*"
         if game.result != "active":
             content += "\nType `!trivia` to play again."
         return content
@@ -317,7 +440,7 @@ class TriviaGame:
         except asyncio.CancelledError:
             return
 
-    async def _start(self, message, difficulty: str | None):
+    async def _start(self, message, difficulty: str | None, source: str | None = None):
         channel_id = message.channel.id
         async with self.state_lock:
             busy = channel_id in self.loading or channel_id in self.active
@@ -330,9 +453,9 @@ class TriviaGame:
         game: Round | None = None
         try:
             async with message.channel.typing():
-                game = await self._choose_question(difficulty, message.guild.id, message.author.id)
+                game = await self._choose_question(difficulty, message.guild.id, message.author.id, source)
             if game is None:
-                await self._say(message, "No Vehicles questions available for that difficulty right now.")
+                await self._say(message, "No trivia questions available for that difficulty right now.")
                 return
             game.deadline = time.monotonic() + self.timeout_seconds
             game.deadline_epoch = int(time.time() + self.timeout_seconds)
@@ -456,7 +579,7 @@ class TriviaGame:
         if not rows:
             await self._say(message, "No trivia scores yet. Type `!trivia` to start.")
             return
-        lines = ["**VEHICLE TRIVIA LEADERBOARD**"]
+        lines = ["**MGR TRIVIA LEADERBOARD**"]
         lines += [f"{i}. <@{r['user_id']}> — **{r['points']} pts** ({r['correct']} correct)"
                   for i, r in enumerate(rows, 1)]
         await self._say(message, "\n".join(lines))
@@ -471,8 +594,15 @@ class TriviaGame:
         command = re.fullmatch(r"!trivia(?:\s+(.+))?", clean, flags=re.IGNORECASE)
         if command:
             arg = (command.group(1) or "").strip().lower()
-            if arg in ("", "next", "easy", "medium", "hard"):
-                await self._start(message, arg if arg in POINTS else None)
+            parts = arg.split()
+            if (arg in ("", "next")
+                    or (parts and len(parts) <= 2
+                        and all(p in POINTS or p in ("fsae", "vehicles", "next") for p in parts)
+                        and sum(p in POINTS for p in parts) <= 1
+                        and sum(p in ("fsae", "vehicles") for p in parts) <= 1)):
+                difficulty = next((p for p in parts if p in POINTS), None)
+                source = next((p for p in parts if p in ("fsae", "vehicles")), None)
+                await self._start(message, difficulty, source)
             elif arg in ("leaderboard", "lb", "top"):
                 await self._leaderboard(message)
             elif arg in ("score", "stats"):
@@ -481,8 +611,11 @@ class TriviaGame:
                 await self._skip(message)
             elif arg in ("help", "commands"):
                 await self._say(message,
-                    "`!trivia` / `!trivia easy|medium|hard` — start vehicle trivia\n"
-                    "React 🇦 🇧 🇨 🇩 on the original question (one guess per player).\n"
+                    "`!trivia` — alternate FSAE and Vehicles questions (50/50)\n"
+                    "`!trivia easy|medium|hard` — choose difficulty\n"
+                    "`!trivia fsae [easy|medium|hard]` — FSAE only\n"
+                    "`!trivia vehicles [easy|medium|hard]` — OpenTDB only\n"
+                    "React 🇦 🇧 🇨 🇩 to answer (one guess per player).\n"
                     "`!trivia score` · `!trivia leaderboard` · `!trivia skip` · `!trivia help`")
             elif re.fullmatch(r"(?:answer\s+)?[a-d]", arg, flags=re.IGNORECASE):
                 await self._say(message, "Answers are reactions now. Tap 🇦 🇧 🇨 or 🇩 on the trivia question.")

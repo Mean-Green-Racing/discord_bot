@@ -1,0 +1,3302 @@
+[
+  {
+    "question": "In what year was Mean Green Racing founded?",
+    "choices": [
+      "2016",
+      "2012",
+      "2008",
+      "2020"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What caused Mean Green Racing to shut down before its comeback?",
+    "choices": [
+      "A funding cut",
+      "COVID-19",
+      "A fire in the shop",
+      "A merger with another club"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "In what year did Mean Green Racing restart?",
+    "choices": [
+      "2019",
+      "2020",
+      "2022",
+      "2024"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "When did MGR start building an electric car?",
+    "choices": [
+      "2020",
+      "2022",
+      "2024",
+      "2026"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What type of powertrain does the F27 car use?",
+    "choices": [
+      "Electric (EV)",
+      "Hybrid",
+      "Internal Combustion (IC)",
+      "Hydrogen fuel cell"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What type of powertrain does the F26 car use?",
+    "choices": [
+      "Internal Combustion (IC)",
+      "Electric (EV)",
+      "Hybrid",
+      "Diesel"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which university does Mean Green Racing represent?",
+    "choices": [
+      "Texas A&M",
+      "University of North Texas",
+      "UT Austin",
+      "Texas Tech"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Who is listed as MGR's project manager for F27?",
+    "choices": [
+      "Julian Pluscht",
+      "Hayden Littlehales",
+      "Mario Moscetta",
+      "Niyonika Sharma"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Who is listed as MGR's chief engineer for F27?",
+    "choices": [
+      "Julian Pluscht",
+      "Trevor Brewster",
+      "Jacob Wolgamott",
+      "Hayden Littlehales"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Who is MGR's head of electrical on the F27 roster?",
+    "choices": [
+      "Joshua Arriaga",
+      "Trevor Brewster",
+      "Mario Moscetta",
+      "Samuel Malagon"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Who is MGR's operations manager for F27?",
+    "choices": [
+      "Niyonika Sharma",
+      "Hayden Littlehales",
+      "Julian Pluscht",
+      "Ellery Craighead"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "How many officers are on MGR's F27 roster?",
+    "choices": [
+      "1",
+      "3",
+      "5",
+      "10"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Did Mean Green Racing's car catch fire at F26 competition?",
+    "choices": [
+      "Yes, twice",
+      "No , the fires witnessed were another team's car",
+      "Yes, once",
+      "The team wasn't at that competition"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Was the battery fire at Michigan International Speedway from an MGR car?",
+    "choices": [
+      "Yes",
+      "No, it was another team's car",
+      "It's unconfirmed",
+      "MGR doesn't attend events at MIS"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which engine powers the F27 car?",
+    "choices": [
+      "Honda CBR600",
+      "Triumph Daytona 675",
+      "Yamaha R6",
+      "Kawasaki ZX-6R"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which older MGR car donated its engine to F27?",
+    "choices": [
+      "F17",
+      "F20",
+      "F23",
+      "F25"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "How much seed funding did the dean give MGR during F26 competition?",
+    "choices": [
+      "$1,000",
+      "$5,000",
+      "$10,000",
+      "$20,000"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "About how many active members did MGR report having?",
+    "choices": [
+      "~10",
+      "~25",
+      "~40",
+      "~100"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What role does the F26 EV car still serve during the F27 build?",
+    "choices": [
+      "Nothing, fully retired",
+      "A functional test and learning platform",
+      "Sold to another team",
+      "Converted to IC"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which MGR subteam includes Composites?",
+    "choices": [
+      "Chassis",
+      "Aero",
+      "Suspension",
+      "Its own separate subteam"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which subteam is responsible for Data Acquisition (DAQ)?",
+    "choices": [
+      "Powertrain",
+      "Electrical",
+      "Chassis",
+      "Business"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What discount did Oshcut offer MGR?",
+    "choices": [
+      "10%",
+      "25%",
+      "50%",
+      "75%"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "How much store credit did Mouser give MGR?",
+    "choices": [
+      "$500",
+      "$1,000",
+      "$2,500",
+      "$5,000"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What discount did EasyComposites offer MGR's Aero team?",
+    "choices": [
+      "5%",
+      "10%",
+      "25%",
+      "50%"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Who donated $1,000 toward MGR's steering assembly?",
+    "choices": [
+      "Victoria Garcia",
+      "Mouser",
+      "DATCU",
+      "Oshcut"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "How is the founder of sponsor Terlingua Racing Team connected to UNT?",
+    "choices": [
+      "They're a UNT alum",
+      "They're a former NASA engineer",
+      "They're a current team member",
+      "They're a UNT professor"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which company in Denton has hired MGR alumni?",
+    "choices": [
+      "Boeing",
+      "Peterbilt",
+      "Traxxas",
+      "Bell Textron"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which company in McKinney has hired MGR alumni?",
+    "choices": [
+      "Siemens Energy",
+      "Traxxas",
+      "Vanderlande",
+      "Safran Seats USA"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What was MGR's 2016 senior design project?",
+    "choices": [
+      "Suspension and Chassis",
+      "SAE Formula Engine",
+      "Paddle Shifters",
+      "EV Accumulator"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What was MGR's 2022 senior design project?",
+    "choices": [
+      "Dry Sump Oiling System",
+      "Paddle Shifters",
+      "EV Accumulator Battery Pack",
+      "Suspension"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which older MGR car appears as a 3D model on the team website?",
+    "choices": [
+      "F17",
+      "F20",
+      "F22",
+      "F25"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which motor and inverter unit does MGR's F26 EV use?",
+    "choices": [
+      "Cascadia Motion iM-125",
+      "Emrax 228",
+      "Tesla Model 3 drive unit",
+      "AMK FSAE motor"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which differential is used in MGR's F26 EV?",
+    "choices": [
+      "Drexler",
+      "Quaife",
+      "Torsen",
+      "OS Giken"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which battery management system is used in the F26 EV?",
+    "choices": [
+      "Orion BMS",
+      "Tesla BMS",
+      "Elithion BMS",
+      "Zeva BMS"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "How long is MGR's 2027 EV onboarding curriculum?",
+    "choices": [
+      "1 week",
+      "2 weeks",
+      "3 weeks",
+      "6 weeks"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What was the status of the proposed battery dunk tank in the EV budget?",
+    "choices": [
+      "Already purchased and installed",
+      "Budgeted, but cost still unknown",
+      "Rejected by the team",
+      "Not needed for EV work"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What happened to MGR's business team structure in 2026?",
+    "choices": [
+      "It was dissolved",
+      "It was formalized, improving sponsor/finance/event systems",
+      "It merged into engineering",
+      "It stayed unchanged"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which parts belong to MGR's Drivetrain team instead of Powertrain?",
+    "choices": [
+      "The engine",
+      "Clutch, transmission, differential, driveshafts",
+      "Fuel system",
+      "Intake and exhaust"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which component is outside MGR Powertrain's responsibilities?",
+    "choices": [
+      "The engine",
+      "Cooling",
+      "The wiring harness",
+      "Intake/exhaust"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which MGR subteam owns the wiring harness?",
+    "choices": [
+      "Powertrain",
+      "Drivetrain",
+      "Electrical",
+      "Chassis"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which potential sponsor did MGR turn down?",
+    "choices": [
+      "Mouser",
+      "Redbull",
+      "Oshcut",
+      "DATCU"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Who leads MGR's Suspension team?",
+    "choices": [
+      "Ellery Craighead",
+      "Samuel Malagon",
+      "Jacob Wolgamott",
+      "Trevor Brewster"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Who leads MGR's Drivetrain team?",
+    "choices": [
+      "Jacob Wolgamott",
+      "Chris Cook",
+      "Alessandro Rico",
+      "Hayden Littlehales"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which two cars were listed for MGR's UTA Autocross trip?",
+    "choices": [
+      "F17 and F20",
+      "F23 and F26",
+      "F25 and F26",
+      "Only the 27 car"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "About how much was budgeted for the F27 build across all subteams?",
+    "choices": [
+      "~$10,000",
+      "~$20,000",
+      "~$35,000",
+      "~$50,000"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Who officially organizes the Formula SAE competition?",
+    "choices": [
+      "FIA",
+      "SAE International",
+      "NASCAR",
+      "IndyCar"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which of these is NOT one of the four FSAE dynamic events?",
+    "choices": [
+      "Acceleration",
+      "Skidpad",
+      "Design",
+      "Endurance"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which of these is a static FSAE event?",
+    "choices": [
+      "Autocross",
+      "Skidpad",
+      "Cost and Manufacturing Event",
+      "Endurance"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which event is scored simultaneously with, but separately from, the Endurance Event?",
+    "choices": [
+      "Acceleration",
+      "Skidpad",
+      "Efficiency",
+      "Autocross"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "How long is the Formula SAE acceleration course?",
+    "choices": [
+      "50 m",
+      "75 m",
+      "100 m",
+      "150 m"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What does \"DNF\" mean in FSAE scoring?",
+    "choices": [
+      "Did Not Finish",
+      "Did Not File",
+      "Disqualified Not Finished",
+      "Driver Not Found"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What does \"DQ\" mean in FSAE scoring?",
+    "choices": [
+      "Did Quit",
+      "Disqualified",
+      "Did not Qualify",
+      "Delayed Qualifying"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What does the checkered flag signal in a dynamic event?",
+    "choices": [
+      "Danger ahead",
+      "Run has been completed",
+      "Pass the car ahead",
+      "Start your run"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What does a green flag signal on an FSAE course?",
+    "choices": [
+      "Stop immediately",
+      "Approval to begin your run",
+      "Pull into the pits",
+      "Danger, slow down"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What does a red flag mean during an FSAE event?",
+    "choices": [
+      "Approval to begin your run",
+      "Come to an immediate safe, controlled stop",
+      "Pull aside to be passed",
+      "Run completed"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What does a black flag require an FSAE driver to do?",
+    "choices": [
+      "Pull into the Driver Change Area for discussion",
+      "Immediate disqualification with no explanation",
+      "Speed up",
+      "Nothing, it's not used"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What does a blue flag require a driver to do?",
+    "choices": [
+      "Stop the car",
+      "Pull into the designated passing zone to be passed",
+      "Danger ahead",
+      "Run completed"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What does a stationary yellow flag warn drivers about?",
+    "choices": [
+      "Great danger, be prepared to stop",
+      "Danger, slow down, no passing",
+      "Run completed",
+      "Approval to begin"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "How many fire extinguishers must a team have at minimum?",
+    "choices": [
+      "1",
+      "2",
+      "3",
+      "4"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What material must an FSAE driver's race suit use?",
+    "choices": [
+      "Flame-resistant material, minimum two layers",
+      "Standard cotton",
+      "Any fireproof-labeled fabric, one layer",
+      "Leather"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "How many wheels must an FSAE car's brakes act on?",
+    "choices": [
+      "Two",
+      "Three",
+      "All four",
+      "It's optional"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "How many independent hydraulic brake circuits are required?",
+    "choices": [
+      "One",
+      "Two",
+      "Three",
+      "Four"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Where must the impact attenuator be mounted?",
+    "choices": [
+      "Behind the driver",
+      "Forward of the Front Bulkhead",
+      "Under the floor",
+      "On the roll hoop"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What does \"BOTS\" stand for?",
+    "choices": [
+      "Brake Over Travel Switch",
+      "Battery Output Test System",
+      "Brake Operation Timing Sensor",
+      "Battery Overcurrent Trip Switch"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What does \"IMD\" stand for in FSAE EV rules?",
+    "choices": [
+      "Internal Motor Driver",
+      "Insulation Monitoring Device",
+      "Impact Measurement Device",
+      "Isolated Master Disconnect"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is the minimum number of drivers needed to enter every dynamic event?",
+    "choices": [
+      "1",
+      "2",
+      "4",
+      "6"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is a gate on an FSAE course?",
+    "choices": [
+      "The starting line",
+      "The path between two cones a vehicle must pass through",
+      "The pit entrance",
+      "A type of flag"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which rulebook section explains how to ask officials rules questions?",
+    "choices": [
+      "GR.7",
+      "AD.2",
+      "IN.1",
+      "S.1"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which rulebook section covers protests?",
+    "choices": [
+      "GR.8",
+      "AD.6",
+      "D.4",
+      "IN.15"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Who evaluates the Design Event?",
+    "choices": [
+      "Track officials",
+      "Design Judges",
+      "The Chief Scrutineer",
+      "Other competing teams"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What must an FSAE car pass before entering a dynamic event?",
+    "choices": [
+      "A written exam",
+      "Technical inspection (scrutineering)",
+      "A sponsor review",
+      "A design presentation"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What does the Intake Restrictor rule apply to?",
+    "choices": [
+      "EV motors",
+      "IC engines",
+      "Brake systems",
+      "Aerodynamic devices"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "In what order must a naturally aspirated IC engine's intake components be installed?",
+    "choices": [
+      "Restrictor, throttle body, engine",
+      "Throttle body, restrictor, engine",
+      "Engine, restrictor, throttle body",
+      "Throttle body, engine, restrictor"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Where are approved Standard Impact Attenuator designs published?",
+    "choices": [
+      "In the rulebook appendix only",
+      "On the Event Website",
+      "Nowhere, teams must always build custom",
+      "In the Design judges' private notes"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What section of the rulebook covers Vehicle Eligibility?",
+    "choices": [
+      "GR.9",
+      "AD.1",
+      "V.1",
+      "F.1"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which warning symbol is required near the primary master and cockpit main switches?",
+    "choices": [
+      "A skull and crossbones",
+      "A red spark on a white-edged blue triangle",
+      "A yellow lightning bolt on black",
+      "No symbol is required"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "How many Ready to Move lights does an EV car need?",
+    "choices": [
+      "One",
+      "Two",
+      "Three",
+      "Four"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "The Rain Test applies to which class of vehicle?",
+    "choices": [
+      "IC only",
+      "EV only",
+      "Both equally",
+      "Neither, it was removed"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "The Noise and Switch Test applies to which class of vehicle?",
+    "choices": [
+      "EV only",
+      "IC only",
+      "Both equally",
+      "Neither"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which cars can be declared a Red Car due to tractive-system problems?",
+    "choices": [
+      "IC vehicles with low fuel",
+      "EV vehicles with Tractive System issues",
+      "Any car with a flat tire",
+      "Cars that fail cost report"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which organization certifies SA-series racing helmets?",
+    "choices": [
+      "Snell",
+      "DOT only",
+      "ECE only",
+      "None, any helmet works"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which parts of the body must the driver's suit cover?",
+    "choices": [
+      "Torso only",
+      "Neck to ankles and wrists",
+      "Head to knees",
+      "Shoulders only"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which structures count as primary chassis structure?",
+    "choices": [
+      "The bodywork skin",
+      "The Front Hoop and Main Hoop",
+      "The seat cushion",
+      "The steering wheel"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What real-world business scenario does Formula SAE simulate?",
+    "choices": [
+      "A professional racing series",
+      "A small manufacturing company pitching a prototype racecar",
+      "A driving school curriculum",
+      "An insurance safety audit"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What does DOO stand for in FSAE course penalties?",
+    "choices": [
+      "Driver Out of Order",
+      "Cone Down or Out",
+      "Disqualified On Objection",
+      "Did Overtake Opponent"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "The \"Driver Change Area\" is primarily used during which event?",
+    "choices": [
+      "Acceleration",
+      "Skidpad",
+      "Endurance (for driver swaps)",
+      "Design"
+    ],
+    "answerIndex": 2,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What must the brake pedal survive during inspection?",
+    "choices": [
+      "A minimum force test",
+      "A minimum temperature test",
+      "A chemical resistance test",
+      "A vibration-only test"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What happens to a run with a rule violation in acceleration, skidpad, or autocross?",
+    "choices": [
+      "Nothing, it's just noted",
+      "That run is disqualified (DQ)",
+      "The whole competition ends",
+      "A warning is issued only"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What makes the endurance event different from shorter dynamic events?",
+    "choices": [
+      "It's the shortest event",
+      "It typically includes a mandatory driver swap",
+      "It has no scoring",
+      "It's a static event"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which rulebook section covers Technical Inspection?",
+    "choices": [
+      "IN",
+      "D",
+      "S",
+      "V"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which rulebook section covers Dynamic Events?",
+    "choices": [
+      "S",
+      "D",
+      "IN",
+      "GR"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which rulebook section covers Static Events?",
+    "choices": [
+      "D",
+      "S",
+      "EV",
+      "IC"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which rulebook section covers EV-specific rules?",
+    "choices": [
+      "IC",
+      "EV",
+      "T",
+      "VE"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which rulebook section covers IC-specific rules?",
+    "choices": [
+      "EV",
+      "IC",
+      "F",
+      "V"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which rulebook section covers Pre-Competition Submissions?",
+    "choices": [
+      "PS",
+      "AD",
+      "GR",
+      "IN"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is the Cost and Manufacturing Event more commonly called?",
+    "choices": [
+      "The Design Event",
+      "The Cost Report",
+      "The Presentation Event",
+      "The Efficiency Event"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "What is the Business Presentation event meant to simulate?",
+    "choices": [
+      "A job interview",
+      "Pitching the car as a business case to judges acting as investors",
+      "A press conference",
+      "A tech inspection"
+    ],
+    "answerIndex": 1,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which rulebook section covers chassis and structural rules?",
+    "choices": [
+      "F",
+      "T",
+      "V",
+      "VE"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which rulebook section covers cockpit, brakes, and powertrain requirements?",
+    "choices": [
+      "T",
+      "F",
+      "V",
+      "AD"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "Which rulebook section covers Vehicle and Driver Equipment?",
+    "choices": [
+      "VE",
+      "V",
+      "T",
+      "GR"
+    ],
+    "answerIndex": 0,
+    "difficulty": "easy"
+  },
+  {
+    "question": "On what date did MGR officially choose an IC build for F27?",
+    "choices": [
+      "June 26, 2026",
+      "July 11, 2026",
+      "August 1, 2026",
+      "September 1, 2026"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which meeting minutes record MGR's decision to switch from EV to IC for F27?",
+    "choices": [
+      "The June 26 Comp Debrief",
+      "The 7/11/26 Meeting Minutes",
+      "The Bosch application essay",
+      "The EV Itemization budget"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which proverb came up when MGR debated building a reliable IC car instead of another EV?",
+    "choices": [
+      "Slow and steady wins the race",
+      "One bird in the hand is worth two in the bush",
+      "Better safe than sorry",
+      "Go big or go home"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "About how much did MGR members pay out of pocket to cover 2025 budget gaps?",
+    "choices": [
+      "~$5,000",
+      "~$9,500",
+      "~$18,000",
+      "~$25,000"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "About how much did MGR members pay out of pocket to cover 2026 budget gaps?",
+    "choices": [
+      "~$1,000",
+      "~$6,500",
+      "~$12,000",
+      "~$20,000"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How did MGR's Aero team score at F26 judging?",
+    "choices": [
+      "3/15, down from 6/15 the year before",
+      "10/15, up from 6/15",
+      "6/15, unchanged",
+      "15/15, a perfect score"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What was the combined Electrical and DAQ score at F26 judging?",
+    "choices": [
+      "8/10",
+      "5/10",
+      "1/10",
+      "3/10"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What staffing lesson did MGR learn from the F26 season?",
+    "choices": [
+      "One expert per subsystem is ideal",
+      "At least two people should know each subsystem well",
+      "Subsystems shouldn't document anything",
+      "Knowledge should stay with seniors only"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What criticism kept coming up in the F26 judges' feedback?",
+    "choices": [
+      "Too many sponsor logos",
+      "Need for clearer, measurable goals and documentation",
+      "The car was too heavy",
+      "Not enough team members"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How dependable did MGR find university funding?",
+    "choices": [
+      "Generous and reliable",
+      "Inconsistent/unreliable",
+      "Nonexistent",
+      "The team's main funding source"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How many sponsor outreach emails was each MGR member expected to send per month?",
+    "choices": [
+      "1 email per member per month",
+      "3 emails per member per month",
+      "10 emails per member per month",
+      "No fixed goal"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How much did Taylor Race Engineering discount MGR's differential package?",
+    "choices": [
+      "$250",
+      "$500",
+      "$750",
+      "$1,000"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Who handled the Taylor Race Engineering, Hoosier, Wilwood, and Keizer Wheels sponsorships?",
+    "choices": [
+      "Jacob Wolgamott",
+      "Ellery Craighead",
+      "Trevor Brewster",
+      "Joshua Arriaga"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How many harness.design software seats did MGR receive?",
+    "choices": [
+      "1",
+      "3",
+      "5",
+      "10"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Who leads MGR Aerodynamics?",
+    "choices": [
+      "Trevor Brewster",
+      "Samuel Malagon",
+      "Alessandro Rico",
+      "Ellery Craighead"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Who leads MGR Chassis?",
+    "choices": [
+      "Christopher Cook",
+      "Samuel Malagon",
+      "Zach Humphrey",
+      "Bryce Lytle"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Who leads MGR Ergonomics?",
+    "choices": [
+      "Alessandro Rico",
+      "Ellery Craighead",
+      "Andrew",
+      "Harrison"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Who was assigned the Wiring Harness role for F27?",
+    "choices": [
+      "Joshua Arriaga",
+      "Ethan Wong",
+      "Mario Moscetta",
+      "Bryce Lytle"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which EV budget category cost almost three times its allowance?",
+    "choices": [
+      "Accumulator",
+      "Sensors",
+      "BMS",
+      "Test Bench"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which EV budget category ran about 56% over budget?",
+    "choices": [
+      "Accumulator",
+      "BMS",
+      "Test Bench",
+      "Sensors"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "About how much funding was still needed by November 1, 2026, in the EV budget?",
+    "choices": [
+      "~$5,000",
+      "~$10,000",
+      "~$16,500",
+      "~$25,000"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How much was budgeted for the high-voltage power supply?",
+    "choices": [
+      "~$1,500",
+      "~$3,000",
+      "~$5,720",
+      "~$10,000"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which $450 tool was planned for checking BMS cell-tap connections?",
+    "choices": [
+      "A megohmmeter",
+      "An LCR meter",
+      "A BMS cell-tap validator tool",
+      "A thermal camera"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Why did MGR install a non-working motor in 2025 without catching the problem first?",
+    "choices": [
+      "It was never tested at all",
+      "The team had no motor test bench",
+      "The motor was mislabeled",
+      "It worked fine until a crash"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How many HV gloves did MGR report owning before the 2026 budget update?",
+    "choices": [
+      "Zero",
+      "Two",
+      "Five",
+      "Ten"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What topics are taught in Week 1 of MGR's 2027 EV curriculum?",
+    "choices": [
+      "Altium PCB design",
+      "Ohm's/Kirchhoff's laws and multimeter basics",
+      "Precharge/discharge circuits",
+      "Shutdown circuit specifics"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What topics are taught in Week 3 of MGR's 2027 EV curriculum?",
+    "choices": [
+      "Solder practice only",
+      "Transistor basics",
+      "Shutdown circuit and BMS specifics, plus Altium",
+      "LTSPICE simulation only"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the name of MGR's twice-per-semester iRacing event?",
+    "choices": [
+      "Casino Night",
+      "Sim Nights",
+      "Tabling at the Union",
+      "Movie watch parties"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which student organizations did MGR consider partnering with for events?",
+    "choices": [
+      "ASME, SWE, IEEE, UNT Drone Club",
+      "Chess Club and Debate Team",
+      "Only Greek life organizations",
+      "None, outreach is solo"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which lubricant company appeared in MGR's sponsor prospect list?",
+    "choices": [
+      "Liquid Moly",
+      "Sol 66",
+      "Mobil 1",
+      "Royal Purple"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "On what day did MGR plan to load the trailer for UTA Autocross?",
+    "choices": [
+      "Thursday",
+      "Friday",
+      "Saturday morning",
+      "Sunday"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What time was the trailer scheduled to reach UTA on Saturday?",
+    "choices": [
+      "5:30 AM",
+      "7 AM",
+      "9 AM",
+      "12 PM"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Where is the UTA Autocross event held?",
+    "choices": [
+      "Woolf Hall",
+      "Nedderman Hall",
+      "Lot 49",
+      "The UNT campus"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Where was the Saturday night pizza and presentation event at UTA?",
+    "choices": [
+      "Lot 49",
+      "Woolf Hall",
+      "Nedderman Hall",
+      "The team's own shop"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Who was a 2025 MGR chief engineer and helped build the F23 car?",
+    "choices": [
+      "Hayden Littlehales",
+      "Miguel Ordaz",
+      "Julian Pluscht",
+      "Jacob Wolgamott"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What held back MGR's EV program after three years?",
+    "choices": [
+      "Lack of interest from members",
+      "Lack of HV infrastructure support and budget realism",
+      "A rule change banning EV",
+      "The 26 car was destroyed"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Why was Liquid Moly a less relevant sponsor after MGR switched to EV?",
+    "choices": [
+      "They went out of business",
+      "Switching to EV reduced relevance for an IC-focused sponsor",
+      "A contract dispute",
+      "They merged with a competitor"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How did MGR's budget compare with rival programs running on about $70,000?",
+    "choices": [
+      "Mean Green Racing's budget is larger",
+      "Mean Green Racing's is a fraction of that, with less reliable funding",
+      "They're identical",
+      "No comparison was ever made"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which possible IC/EV development schedule did MGR discuss?",
+    "choices": [
+      "Dropping IC after 3 months",
+      "An 8-month IC build, then ongoing EV development",
+      "Running both simultaneously forever",
+      "A 6-month/18-month split"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What was the F25 BOM template kept for?",
+    "choices": [
+      "Current F27 part specs",
+      "A formatting example for the Cost Report event",
+      "The team's official parts catalog",
+      "A sponsor pitch document"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which sponsor helped MGR with trailer transportation?",
+    "choices": [
+      "North DFW Trailers",
+      "DATCU",
+      "Mouser",
+      "JEGS"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which restaurant hosted an MGR fundraising night?",
+    "choices": [
+      "Fifth Gear Automotive",
+      "Dillas Quesadillas",
+      "Velocity Sim Racing",
+      "Jostens"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How many of the roughly 39 members in MGR's planning roster studied electrical engineering?",
+    "choices": [
+      "0",
+      "2",
+      "10",
+      "20"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What condition in the shop made battery storage a concern?",
+    "choices": [
+      "Too much AC",
+      "A hot environment with no climate control",
+      "Too much natural light",
+      "A lack of shelving"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How much did MGR spend on the accumulator category against an $8,000 budget?",
+    "choices": [
+      "~$5,000 (under)",
+      "~$7,638 (under)",
+      "~$9,000 (over)",
+      "~$12,000 (over)"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How much did MGR spend on its BMS against a $6,000 budget?",
+    "choices": [
+      "~$1,000 (under)",
+      "~$2,935 (under)",
+      "~$6,500 (over)",
+      "~$8,000 (over)"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What fuel injector problem did the F27 Electrical lead flag?",
+    "choices": [
+      "A missing connector diagram",
+      "Fuel injector quantity/peak-current mismatches",
+      "A wrong CAN bitrate",
+      "A sponsor name error"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What did the old HVMS label on the F27 harness actually refer to?",
+    "choices": [
+      "A brand-new HV system",
+      "The LV master switch, since renamed 'Cut-off Switch'",
+      "A typo with no real meaning",
+      "An EV-only part not used on 27"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What change did MGR plan for connector C24 in the F27 harness?",
+    "choices": [
+      "It's unused",
+      "It currently lumps the fuel pump and water pump together, splitting soon",
+      "It's a spare connector",
+      "It only carries CAN signals"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What did MGR use to power the F26 low-voltage system?",
+    "choices": [
+      "Milwaukee power tool batteries",
+      "A car battery",
+      "A LiPo drone battery",
+      "Standard AA cells"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which software was used to design the F26 wiring harness?",
+    "choices": [
+      "AutoCAD",
+      "Altium",
+      "SolidWorks Electrical",
+      "KiCad"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which area of the F26 electrical program needed stronger fundamentals?",
+    "choices": [
+      "Chassis stiffness",
+      "DAQ foundational knowledge",
+      "Tire selection",
+      "Sponsor relationships"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which two HV test instruments was MGR missing before the 2026 budget update?",
+    "choices": [
+      "A megohmmeter and an LCR meter",
+      "A multimeter",
+      "A soldering iron",
+      "A laptop"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How did a senior design team improvise battery-cell thermal load testing?",
+    "choices": [
+      "Used a professional thermal chamber",
+      "Put two wires in a pool of salted DI water",
+      "Used a hair dryer",
+      "Skipped thermal testing entirely"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What safety problem can result from tight deadlines and limited support?",
+    "choices": [
+      "Faster onboarding",
+      "Unsafe work practice",
+      "Better documentation",
+      "More sponsor outreach"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the maximum gasoline intake restrictor diameter in FSAE?",
+    "choices": [
+      "18.0 mm",
+      "19.0 mm",
+      "20.0 mm",
+      "22.0 mm"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the maximum E85 intake restrictor diameter in FSAE?",
+    "choices": [
+      "17.0 mm",
+      "19.0 mm",
+      "20.0 mm",
+      "21.0 mm"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How quickly must a driver exit the car during the egress test?",
+    "choices": [
+      "3 seconds",
+      "5 seconds",
+      "10 seconds",
+      "15 seconds"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How must the driver be positioned when the egress test begins?",
+    "choices": [
+      "Standing beside the car",
+      "Fully seated, hands on the connected steering wheel",
+      "Half out of the cockpit already",
+      "Lying flat in the car"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How long must a custom impact attenuator be at minimum?",
+    "choices": [
+      "100 mm",
+      "150 mm",
+      "200 mm",
+      "300 mm"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How tall must a custom impact attenuator be at minimum?",
+    "choices": [
+      "50 mm",
+      "100 mm",
+      "150 mm",
+      "200 mm"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the peak load rating of the standard foam impact attenuator?",
+    "choices": [
+      "60 kN",
+      "75 kN",
+      "95 kN",
+      "120 kN"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the peak load rating of the standard honeycomb impact attenuator?",
+    "choices": [
+      "40 kN",
+      "60 kN",
+      "80 kN",
+      "95 kN"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What minimum insulation resistance per volt must an EV's IMD detect?",
+    "choices": [
+      "100 Ohm/Volt",
+      "250 Ohm/Volt",
+      "500 Ohm/Volt",
+      "1000 Ohm/Volt"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How quickly must the IMD shut down the tractive system during testing?",
+    "choices": [
+      "10 seconds",
+      "30 seconds",
+      "60 seconds",
+      "120 seconds"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How long does the EV rain test last?",
+    "choices": [
+      "60 seconds",
+      "120 seconds",
+      "240 seconds",
+      "300 seconds"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the minimum autocross track width?",
+    "choices": [
+      "2.5 m",
+      "3.5 m",
+      "4.5 m",
+      "5.5 m"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the minimum endurance track width?",
+    "choices": [
+      "3.0 m",
+      "3.5 m",
+      "4.5 m",
+      "5.5 m"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How many autocross runs may a team make?",
+    "choices": [
+      "Two",
+      "Three",
+      "Four",
+      "Unlimited"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How many drivers can share the four autocross runs?",
+    "choices": [
+      "One",
+      "Two",
+      "Three",
+      "Four"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How many people may occupy an IC car's driver change area, including drivers?",
+    "choices": [
+      "One",
+      "Two",
+      "Three",
+      "Five"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which official must be present in an EV driver's change area?",
+    "choices": [
+      "The Chief Engineer",
+      "The Electrical System Officer (ESO)",
+      "The Faculty Advisor",
+      "Any team member"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How much pedal force must the FSAE braking system survive?",
+    "choices": [
+      "500 N",
+      "1000 N",
+      "2000 N",
+      "5000 N"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How far apart are the centers of the two skidpad circles?",
+    "choices": [
+      "10.25 m",
+      "15.25 m",
+      "18.25 m",
+      "20.25 m"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the inner circle diameter on the FSAE skidpad?",
+    "choices": [
+      "12.25 m",
+      "15.25 m",
+      "18.25 m",
+      "20.25 m"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What horsepower-to-displacement limit defines an industrial engine under FSAE rules?",
+    "choices": [
+      "Any diesel engine",
+      "5 hp per 100cc or less (without the restrictor)",
+      "Any engine over 1000cc",
+      "Any turbocharged engine"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What average piston speed limit applies to automotive and motorcycle engines at inspection?",
+    "choices": [
+      "500 m/min",
+      "914.4 m/min",
+      "1200 m/min",
+      "2000 m/min"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What average piston speed limit applies to industrial engines at inspection?",
+    "choices": [
+      "500 m/min",
+      "731.5 m/min",
+      "900 m/min",
+      "1100 m/min"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How many fire extinguishers must accompany a car moved with a push bar?",
+    "choices": [
+      "Zero extra",
+      "One",
+      "Two",
+      "Three"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which racing suit standard does FSAE accept?",
+    "choices": [
+      "SFI 3.2A/5",
+      "ISO 9001",
+      "ANSI Z87.1",
+      "DOT FMVSS 218"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which organization certifies helmets such as SA2020?",
+    "choices": [
+      "Snell",
+      "UL",
+      "CPSC",
+      "ASTM"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What problem does the EV Red Car designation warn about?",
+    "choices": [
+      "A car with cosmetic damage only",
+      "Possible damage/fault affecting the EV Tractive System",
+      "A car that's low on fuel",
+      "A car painted red"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What does a black flag with an orange dot tell a driver?",
+    "choices": [
+      "Immediate disqualification",
+      "Something's been observed needing closer inspection",
+      "Approval to begin",
+      "The run was completed"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What is the penalty for an endurance rule violation?",
+    "choices": [
+      "Immediate DQ of the whole event",
+      "A 60-second time penalty",
+      "No penalty, just a warning",
+      "Loss of all static-event points"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What happens to an acceleration, skidpad, or autocross run with a rule violation?",
+    "choices": [
+      "Each run with a Violation DQs that run",
+      "Violations are never penalized",
+      "Only three Violations trigger a DQ",
+      "Violations only affect static events"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How many drivers must compete across all dynamic events?",
+    "choices": [
+      "2",
+      "3",
+      "4",
+      "6"
+    ],
+    "answerIndex": 2,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How many dynamic events may one driver enter?",
+    "choices": [
+      "Two",
+      "Three",
+      "Four",
+      "All of them"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which EV shutdown circuit device follows the BMS?",
+    "choices": [
+      "The Insulation Monitoring Device (IMD)",
+      "The Brake Over Travel Switch (BOTS)",
+      "The Inertia Switch",
+      "The Master Switches"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What kind of switch is required for the Brake Over Travel Switch (BOTS)?",
+    "choices": [
+      "A software-only virtual switch",
+      "A mechanical single pole, single throw switch",
+      "A magnetic reed switch",
+      "A capacitive touch switch"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How do inertia switch requirements differ between IC and EV FSAE cars?",
+    "choices": [
+      "Both require it equally",
+      "EV must have one, IC should have one",
+      "Only IC requires it",
+      "Neither requires it"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What qualifies as a valid reason to protest FSAE results?",
+    "choices": [
+      "Any disagreement with a judge's opinion",
+      "Actual, non-trivial harm or a substantive effect on the team's score",
+      "A tie with another team",
+      "A missed photo opportunity"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What information do FSAE design judges use to score a car?",
+    "choices": [
+      "Only the written Design Report",
+      "Design Documents, team discussion, and a vehicle inspection",
+      "Only how the car looks",
+      "Only the Cost Report"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What does DNF mean when an FSAE run cannot be completed?",
+    "choices": [
+      "A team tried a run but didn't complete it, or wasn't permitted to",
+      "A team never started a run",
+      "A car finished but was disqualified",
+      "A car was never inspected"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What does DQ mean in FSAE results?",
+    "choices": [
+      "The run or event is no longer valid",
+      "The car finished last",
+      "The driver quit voluntarily",
+      "The team withdrew from competition"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How is a gate defined on an FSAE course?",
+    "choices": [
+      "The pit lane entrance",
+      "Two cones, one on each side, defining a path the car must pass through",
+      "The starting line barrier",
+      "A penalty box"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How many layers of flame-resistant fabric must a racing suit have?",
+    "choices": [
+      "One",
+      "Two",
+      "Three",
+      "Four"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What does \"GLVMS\" stand for?",
+    "choices": [
+      "Grounded Low Voltage Master Switch",
+      "General Low Voltage Main System",
+      "Ground Level Vehicle Monitoring Sensor",
+      "Grounded Line Voltage Measuring Switch"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Where can teams find the approved standard impact attenuator list?",
+    "choices": [
+      "Each team's own faculty advisor",
+      "Published on the Event Website by the organizers",
+      "Decided by vote among competing teams",
+      "There is no approved list"
+    ],
+    "answerIndex": 1,
+    "difficulty": "medium"
+  },
+  {
+    "question": "Which rulebook section covers Pre-Competition Submissions requirements like the Design Spec Sheet?",
+    "choices": [
+      "PS",
+      "AD",
+      "GR",
+      "V"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "What does \"ESO\" stand for in FSAE EV rules?",
+    "choices": [
+      "Electrical System Officer",
+      "Energy Storage Operator",
+      "Emergency Shutdown Official",
+      "Electric Safety Observer"
+    ],
+    "answerIndex": 0,
+    "difficulty": "medium"
+  },
+  {
+    "question": "How much did MGR members spend out of pocket on 2026 budget gaps, down to the cent?",
+    "choices": [
+      "$4,508.79",
+      "$6,508.79",
+      "$8,508.79",
+      "$10,508.79"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What was the grand total in MGR's EV Itemization budget?",
+    "choices": [
+      "$16,483.29",
+      "$20,400.00",
+      "$25,937.77",
+      "$31,200.00"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How much EV funding was still needed by November 1, 2026?",
+    "choices": [
+      "$8,241.65",
+      "$12,900.00",
+      "$16,483.29",
+      "$25,937.77"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What was the test bench cost against MGR's $5,000 budget?",
+    "choices": [
+      "$5,000.00",
+      "$6,250.00",
+      "$7,788.00",
+      "$9,100.00"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How much did MGR spend on sensors against a $250 budget?",
+    "choices": [
+      "$450.20",
+      "$705.90",
+      "$900.00",
+      "$1,250.00"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How much was the high-voltage power supply in the EV budget?",
+    "choices": [
+      "$3,200",
+      "$4,500",
+      "$5,720",
+      "$7,000"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How much did MGR budget for its variable-load battery tester?",
+    "choices": [
+      "$980",
+      "$1,450",
+      "$2,068",
+      "$3,100"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What was the per-unit price of the Class 0 HV glove kit?",
+    "choices": [
+      "$45 each",
+      "$89 each",
+      "$133 each",
+      "$210 each"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Which three officer positions make up MGR's leadership team?",
+    "choices": [
+      "Project Manager, Chief Engineer, Operations Manager",
+      "Project Manager, Head Electrical, Chief Engineer",
+      "Chief Engineer, Treasurer, Secretary",
+      "President, Vice President, Treasurer"
+    ],
+    "answerIndex": 0,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How many design leads did MGR report having?",
+    "choices": [
+      "8",
+      "12",
+      "18",
+      "25"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How many business leads did MGR report having?",
+    "choices": [
+      "1",
+      "2",
+      "4",
+      "6"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Which year had Suspension and Chassis as its senior design project?",
+    "choices": [
+      "2016",
+      "2018",
+      "2020",
+      "2022"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "In what year was Ergonomics/Suspension a senior design project?",
+    "choices": [
+      "2017",
+      "2019",
+      "2021",
+      "2023"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "In what year was Powertrain/Electric a senior design project?",
+    "choices": [
+      "2018",
+      "2020",
+      "2022",
+      "2024"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Which year had a standalone Suspension senior design project?",
+    "choices": [
+      "2019",
+      "2020",
+      "2021",
+      "2022"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Which year featured both an EV accumulator pack and dry-sump oiling senior design project?",
+    "choices": [
+      "2020",
+      "2022",
+      "2024",
+      "2026"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What happened at the June 26 and July 11, 2026 meetings that led to the IC decision?",
+    "choices": [
+      "They're the same document",
+      "6/26 was lead-up discussion; 7/11 was the actual formal decision",
+      "7/11 was lead-up; 6/26 was the formal decision",
+      "Neither relates to the IC decision"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Which missing team position could have caught subsystem interference before assembly?",
+    "choices": [
+      "A dedicated social media lead",
+      "A master-assembly lead",
+      "A second faculty advisor",
+      "A full-time mechanic"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How did MGR's officers reach the decision to switch from EV to IC?",
+    "choices": [
+      "It was instant and unanimous",
+      "It followed real debate across multiple meetings, not necessarily unanimous",
+      "It was decided by a single vote of general members",
+      "No officers were actually involved"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Which split schedule for IC and EV development was discussed but never finalized?",
+    "choices": [
+      "A 6-month/18-month split",
+      "An 8-month IC build, then ongoing EV development",
+      "Dropping IC entirely after 3 months",
+      "Simultaneous IC and EV every year"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What budget size and funding mix did MGR cite for better-funded FSAE programs?",
+    "choices": [
+      "Smaller, and fully student-funded",
+      "~$70,000, often half university-funded",
+      "Identical to MGR's budget",
+      "No such comparison exists"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Why did the switch to EV hurt MGR's relationship with Liquid Moly?",
+    "choices": [
+      "A pricing dispute",
+      "Switching to EV lost relevance for an IC-focused sponsor",
+      "They stopped selling automotive products",
+      "A logo licensing issue"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How well did MGR members meet the monthly sponsor email goal in summer 2026?",
+    "choices": [
+      "Every member hit the goal every month",
+      "It was mostly not met , only one person hit it, in one month",
+      "The goal was abandoned before June",
+      "It was exceeded by the whole team"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What simulator work is included in Week 2 of MGR's EV curriculum?",
+    "choices": [
+      "Shutdown circuit certification exam",
+      "LTSPICE/Multisim and a precharge/discharge circuit demo",
+      "Final competition driving test",
+      "Sponsor pitch writing"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Whose precharge whitepaper is cited in MGR's EV curriculum?",
+    "choices": [
+      "A Tesla engineering blog",
+      "Sensata's precharge-circuit whitepaper",
+      "An SAE International webinar",
+      "A YouTube tutorial series"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How many damper travel sensors did F26 have, and how many corners were planned for expansion?",
+    "choices": [
+      "One; expand to two corners",
+      "Two; expand to all four corners",
+      "Four; already on all corners",
+      "None; it's not measured at all"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What makeshift setup did a senior design team use to heat-test battery cells?",
+    "choices": [
+      "A commercial thermal chamber",
+      "A hair dryer and stopwatch",
+      "Two wires in a pool of salted DI water",
+      "A walk-in freezer"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Which two precision instruments did MGR lack for high-voltage work?",
+    "choices": [
+      "An oscilloscope and a function generator",
+      "A megohmmeter and an LCR meter",
+      "A multimeter and a soldering iron",
+      "A thermal camera and a tachometer"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What problem did MGR identify with its crimping tools?",
+    "choices": [
+      "Fuel line connections",
+      "Strong electrical connections",
+      "Chassis welding",
+      "Composite layup"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What unsafe behavior did MGR's planning documents warn that deadline pressure could encourage?",
+    "choices": [
+      "Better teamwork",
+      "Unsafe work practice",
+      "Faster recruiting",
+      "Higher sponsor retention"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What score did MGR Aero earn at F26 judging compared with the previous year?",
+    "choices": [
+      "3/15, down from 6/15",
+      "6/15, up from 3/15",
+      "10/15, unchanged",
+      "15/15, a new high"
+    ],
+    "answerIndex": 0,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What score did MGR's Electrical and DAQ teams earn together at F26 judging?",
+    "choices": [
+      "1/10",
+      "3/10",
+      "5/10",
+      "8/10"
+    ],
+    "answerIndex": 0,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Which former chief engineer helped build MGR's F23 car?",
+    "choices": [
+      "Hayden Littlehales",
+      "Miguel Ordaz",
+      "Julian Pluscht",
+      "Jacob Wolgamott"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What budget concern did MGR raise about a large composite aero project?",
+    "choices": [
+      "It's banned by FSAE rules",
+      "It should be weighed against whether the budget supports it once core systems are funded",
+      "It has no bearing on competition score",
+      "It was never actually raised as a concern"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How did the F23 engine help make an IC build more attractive for F27?",
+    "choices": [
+      "It's unrelated to the decision",
+      "It ties into existing alumni/sponsor familiarity with a working IC platform",
+      "It was actually scrapped and not reused",
+      "It's an EV-only component"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What was the total estimated F27 budget across the listed subteams?",
+    "choices": [
+      "$18,200",
+      "$20,400",
+      "$22,600",
+      "$25,900"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How was Oshcut's 50% discount treated in MGR's F27 budget table?",
+    "choices": [
+      "50% , fully accounted for",
+      "50% , not accounted for in that table",
+      "25% , fully accounted for",
+      "10% , not accounted for"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How much did Taylor Race Engineering take off the differential package?",
+    "choices": [
+      "$500 off brakes",
+      "$750 off the whole differential package",
+      "$1,000 off wheels",
+      "$250 off wheel bearings"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Why didn't MGR run full IC and EV programs simultaneously for F27?",
+    "choices": [
+      "Rules forbid running two cars",
+      "Team size , IC still needs its own dedicated electrical work, splitting focus too thin",
+      "Budget was identical either way",
+      "No reason was given at all"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What earlier EV build schedule informed MGR's F27 planning?",
+    "choices": [
+      "A single 1-year EV cycle that succeeded completely",
+      "A previous 2-year EV cycle (F25) with a lot of early waiting and late rushing",
+      "No prior EV cycle existed",
+      "A 4-year EV cycle"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Why did MGR keep the F26 EV car during the F27 IC build?",
+    "choices": [
+      "It has no further purpose",
+      "It serves as a test/learning platform for DAQ and LV systems",
+      "It's required by FSAE rules to retain old cars",
+      "It's being sold for parts"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Which two university resources were missing for safe HV development?",
+    "choices": [
+      "Lack of a 3D printer",
+      "Lack of dedicated HV workspace and a high-voltage power supply for testing",
+      "Lack of a logo design",
+      "Lack of any faculty advisor"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What knowledge-loss risk did MGR face if EV seniors graduated during an IC year?",
+    "choices": [
+      "Software license expiration",
+      "Graduating seniors taking institutional knowledge with them",
+      "A change in university policy",
+      "Loss of sponsor contacts"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What EV competition record led MGR to rethink its build strategy?",
+    "choices": [
+      "Winning every static event",
+      "Three years into EV with no car that ever completed a full competition run",
+      "An EV car winning Endurance outright",
+      "A tie with another EV team"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How do the F17 and F23 cars differ in MGR's history?",
+    "choices": [
+      "Both are EV cars",
+      "Both are different past IC car generations, with F17 being the older one",
+      "F17 is a nickname for F23",
+      "Neither actually exists, they're placeholders"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What insulation-resistance threshold must an FSAE EV insulation monitor use?",
+    "choices": [
+      "100 Ohm/Volt",
+      "250 Ohm/Volt",
+      "500 Ohm/Volt",
+      "750 Ohm/Volt"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Within how many seconds must the IMD shut down the tractive system during testing?",
+    "choices": [
+      "10 seconds or less",
+      "30 seconds or less",
+      "60 seconds or less",
+      "90 seconds or less"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How long is the EV rain test, and how should the IMD behave?",
+    "choices": [
+      "120 seconds; the IMD must react immediately",
+      "240 seconds; the IMD must NOT react",
+      "240 seconds; the IMD must react immediately",
+      "300 seconds; no IMD requirement"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What is the standard foam impact attenuator's peak load rating?",
+    "choices": [
+      "60 kN",
+      "75 kN",
+      "95 kN",
+      "110 kN"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What is the standard honeycomb impact attenuator's peak load rating?",
+    "choices": [
+      "45 kN",
+      "60 kN",
+      "80 kN",
+      "95 kN"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What minimum dimensions must a custom impact attenuator have?",
+    "choices": [
+      "150 mm length, 75 mm height",
+      "200 mm length, 100 mm height",
+      "250 mm length, 125 mm height",
+      "300 mm length, 150 mm height"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How much force must an FSAE brake pedal withstand during its strength test?",
+    "choices": [
+      "1000 N",
+      "1500 N",
+      "2000 N",
+      "3000 N"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What is the distance between the centers of the two skidpad circles?",
+    "choices": [
+      "15.25 m",
+      "16.75 m",
+      "18.25 m",
+      "20.25 m"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What is the diameter of the inner skidpad circles?",
+    "choices": [
+      "12.25 m",
+      "15.25 m",
+      "18.25 m",
+      "20.25 m"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What is the minimum FSAE autocross course width?",
+    "choices": [
+      "2.5 m",
+      "3.5 m",
+      "4.0 m",
+      "4.5 m"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What is the minimum FSAE endurance course width?",
+    "choices": [
+      "3.5 m",
+      "4.0 m",
+      "4.5 m",
+      "5.0 m"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "About how long is one autocross run?",
+    "choices": [
+      "0.50 km",
+      "0.65 km",
+      "0.80 km",
+      "1.00 km"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What is the piston speed limit for automotive and motorcycle engines in both metric and imperial units?",
+    "choices": [
+      "731.5 m/min (2,400 ft/min)",
+      "914.4 m/min (3,000 ft/min)",
+      "1000 m/min (3,280 ft/min)",
+      "1200 m/min (3,937 ft/min)"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What is the piston speed limit for industrial engines?",
+    "choices": [
+      "600 m/min (1,968 ft/min)",
+      "731.5 m/min (2,400 ft/min)",
+      "850 m/min (2,789 ft/min)",
+      "914.4 m/min (3,000 ft/min)"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What horsepower per 100 cc defines an industrial engine without the restrictor?",
+    "choices": [
+      "3 hp per 100cc or less",
+      "5 hp per 100cc or less",
+      "8 hp per 100cc or less",
+      "10 hp per 100cc or less"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How much smaller is the E85 intake restrictor limit than the gasoline limit?",
+    "choices": [
+      "0.5 mm",
+      "1.0 mm",
+      "1.5 mm",
+      "2.0 mm"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What diameter head circle is used in the FSAE driver template?",
+    "choices": [
+      "200 mm circle",
+      "250 mm circle",
+      "300 mm circle",
+      "350 mm circle"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What diameter circles represent the neck and shoulders in the driver template?",
+    "choices": [
+      "150 mm circle",
+      "200 mm circle",
+      "250 mm circle",
+      "300 mm circle"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How far apart are the centers of the two 200 mm neck circles in the driver template?",
+    "choices": [
+      "390 mm",
+      "440 mm",
+      "490 mm",
+      "540 mm"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How far is the head-circle center from the upper neck-circle center in the driver template?",
+    "choices": [
+      "230 mm",
+      "280 mm",
+      "330 mm",
+      "380 mm"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How much helmet clearance is required above the 95th-percentile driver template?",
+    "choices": [
+      "25 mm",
+      "50 mm",
+      "75 mm",
+      "100 mm"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How many critical fasteners are required for a bolted impact attenuator?",
+    "choices": [
+      "Four",
+      "Six",
+      "Eight",
+      "Ten"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What is the minimum diameter for impact attenuator mounting bolts?",
+    "choices": [
+      "1/4\" (6 mm)",
+      "5/16\" (8 mm)",
+      "3/8\" (10 mm)",
+      "1/2\" (12 mm)"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What minimum spacing is required between impact attenuator mounting bolts?",
+    "choices": [
+      "25 mm",
+      "50 mm",
+      "75 mm",
+      "100 mm"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What minimum load must each impact attenuator mounting bolt withstand?",
+    "choices": [
+      "5 kN",
+      "10 kN",
+      "15 kN",
+      "20 kN"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What shear and peel strength must a bonded anti-intrusion plate attachment have?",
+    "choices": [
+      "60 kN",
+      "90 kN",
+      "120 kN",
+      "150 kN"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What is the minimum weld length for an impact attenuator attachment?",
+    "choices": [
+      "15 mm",
+      "25 mm",
+      "35 mm",
+      "50 mm"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How many people can be in an IC car's driver change area at once?",
+    "choices": [
+      "Two",
+      "Three",
+      "Four",
+      "Five"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Which three people may be in an EV car's driver change area?",
+    "choices": [
+      "Three drivers only",
+      "The ESO plus two drivers",
+      "The Chief Engineer plus two drivers",
+      "Any three team members"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What penalty applies for each unauthorized person in the driver change area?",
+    "choices": [
+      "A 10-point penalty",
+      "A 20-point penalty",
+      "Immediate DQ",
+      "A verbal warning only"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What time penalty applies to an endurance rule violation?",
+    "choices": [
+      "30-second penalty",
+      "60-second penalty",
+      "90-second penalty",
+      "A flat 100-point deduction"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What happens if two acceleration, skidpad, or autocross runs receive rule violations?",
+    "choices": [
+      "Only the first Violation counts",
+      "Both runs get DQ'd (the two best runs)",
+      "Nothing, Violations only count once per event",
+      "The team is banned from future events"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How many drivers must take part across all dynamic events?",
+    "choices": [
+      "Two",
+      "Three",
+      "Four",
+      "Five"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How many dynamic events can any one driver enter?",
+    "choices": [
+      "Two",
+      "Three",
+      "Four",
+      "All of them, no limit"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Which switch comes immediately before the BOTS in the EV shutdown circuit?",
+    "choices": [
+      "Shutdown Buttons",
+      "Master Switches (GLVMS, TSMS)",
+      "The Inertia Switch",
+      "Interlocks"
+    ],
+    "answerIndex": 0,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What type of mechanical switch must the BOTS use?",
+    "choices": [
+      "A software-debounced digital input",
+      "A mechanical single pole, single throw switch",
+      "A dual-pole relay",
+      "A photoelectric sensor"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How do EV and IC inertia switch requirements differ?",
+    "choices": [
+      "EV: must have; IC: should have",
+      "EV: should have; IC: must have",
+      "Both: must have, no exceptions",
+      "Neither is required by rule"
+    ],
+    "answerIndex": 0,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What happens when an EV car receives a Red Car designation?",
+    "choices": [
+      "A mandatory repaint",
+      "Isolating the vehicle and restricting contact with it",
+      "An automatic DQ with no appeal",
+      "Nothing , it's informational only"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "At what frequency must the Ready to Move light flash if voltage outside the tractive battery container reaches 60 V?",
+    "choices": [
+      "0.1-0.5 Hz",
+      "0.66-1.33 Hz",
+      "2.5-5 Hz",
+      "10-15 Hz"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "At what frequency and duty cycle does the tractive system indicator show a BMS or IMD fault?",
+    "choices": [
+      "0.1-0.5 Hz, 25% duty cycle",
+      "0.66-1.33 Hz, 50% duty cycle",
+      "2.5-5 Hz, 50% duty cycle",
+      "10 Hz constant, 100% duty cycle"
+    ],
+    "answerIndex": 2,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What kind of harm can justify an FSAE results protest?",
+    "choices": [
+      "Any disagreement at all, no threshold required",
+      "Actual, non-trivial harm to the team, or a substantive effect on their score",
+      "Only if a judge admits an error",
+      "Only during the Design Event"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How visible must the fuel-level sight tube be during the tilt test?",
+    "choices": [
+      "Visible only with a flashlight",
+      "Clearly visible to two individuals without assistance or removing parts",
+      "Visible only after removing body panels",
+      "Not required to be visible at all"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What is the required intake component order for turbocharged or supercharged engines?",
+    "choices": [
+      "Throttle body, restrictor, compressor, engine",
+      "Restrictor, compressor, throttle body, engine",
+      "Compressor, restrictor, throttle body, engine",
+      "Throttle body, compressor, restrictor, engine"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What movement is prohibited at the intake restrictor's narrowest point?",
+    "choices": [
+      "Painted any color",
+      "Movable or flexible in any way",
+      "Made of aluminum",
+      "Visible during inspection"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "After a single-point hydraulic failure, how many wheels must still brake effectively?",
+    "choices": [
+      "Full stopping power on all four wheels",
+      "Effective braking action on at least two wheels",
+      "No requirement , any failure ends the test",
+      "Full regenerative braking only"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How many independent hydraulic circuits must an FSAE braking system have?",
+    "choices": [
+      "No redundancy required",
+      "Two independent hydraulic circuits",
+      "Three parallel circuits",
+      "A backup pneumatic circuit"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "When does a fallen or displaced cone count as DOO?",
+    "choices": [
+      "Cone knocked over, OR its entire base outside the marked box around its position",
+      "Cone touched by any part of the car",
+      "Cone missing from the course entirely",
+      "Cone replaced by track workers"
+    ],
+    "answerIndex": 0,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What conditions count as DNF in FSAE results?",
+    "choices": [
+      "A team never attempted a run",
+      "A team tried a run but did not complete it, or was not permitted to",
+      "A car was disqualified before starting",
+      "A driver was injured during a run"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What constitutes a gate on an FSAE course?",
+    "choices": [
+      "The path between two cones (one each side) that a vehicle must pass through",
+      "The starting line of any dynamic event",
+      "A barrier used only in Skidpad",
+      "The exit from the paddock"
+    ],
+    "answerIndex": 0,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What happens to design scores when a team cannot explain an engineering choice?",
+    "choices": [
+      "Automatically fail the team",
+      "Deduct points",
+      "Ignore it and move on",
+      "Require a written essay afterward"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "How does the efficiency event relate to endurance?",
+    "choices": [
+      "It's part of the Endurance score, not separate",
+      "It's a separate event, conducted simultaneously with Endurance",
+      "It happens on a different day entirely",
+      "It only applies to EV cars"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Where must the primary master switch be mounted for external access?",
+    "choices": [
+      "Anywhere accessible only from inside the cockpit",
+      "Driver's right-hand side, near the Main Hoop, at shoulder height, operable from outside",
+      "Underneath the car, accessible only with tools",
+      "On the roof of the car"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What document describes an FSAE EV car's full electrical system?",
+    "choices": [
+      "The Cost Report",
+      "The Electrical System Form (ESF)",
+      "The Design Spec Sheet",
+      "The Business Plan"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "Which electrical components belong to the Grounded Low Voltage (GLV) system?",
+    "choices": [
+      "Any part of the Tractive System",
+      "Every electrical part that is NOT part of the Tractive System",
+      "Only the BMS wiring",
+      "The charger circuit only"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  },
+  {
+    "question": "What must the GLV system still operate without?",
+    "choices": [
+      "Operate only when the Tractive Battery Pack is installed",
+      "Operate with the Tractive Battery Pack removed from the vehicle",
+      "Share a ground with the Tractive System",
+      "Bypass the Master Switch entirely"
+    ],
+    "answerIndex": 1,
+    "difficulty": "hard"
+  }
+]
