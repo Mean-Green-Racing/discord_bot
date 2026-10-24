@@ -8,3 +8,5 @@ numpy>=1.26,<3
 # Existing KB PDF/DOCX extraction support
 pypdf>=4.0
 python-docx>=1.0
+# Lightweight local rendering of Mermaid Gantt charts as Discord PNGs
+Pillow>=10,<13

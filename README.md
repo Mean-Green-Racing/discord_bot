@@ -1,71 +1,69 @@
-# Mean Green Bot — Hybrid Search Update (Linux / 1 GB RAM)
+# Mean Green Bot — Mermaid Gantt + Manager Source Limit
 
-**Baseline:** Uses the newest FSAE trivia update (reaction answers, 300 `fsae_trivia.json` questions, 50/50 FSAE/vehicle mix), and the existing GitHub-SSH deploy-key integration and SQLite Claude budget tracking. The trivia, scores, reaction formatting, channel access, `!` commands, and spending limit are retained.
+This is an **incremental update** to the hybrid-search, reaction-trivia version of Mean Green Bot. It uses the latest `kb.py` that produces short `[filename](https://github.com/.../blob/main/...)` source links.
 
-## Install without losing your settings or saved data
+## Install (existing bot, 1 GB Linux server)
 
-1. Stop the currently running bot.
-2. **Back up** your existing bot directory, especially `.env`, `prompt.txt`, and `data/`.
-3. Replace `bot.py` and **`kb.py`** with the two files from this update. Keep your existing `.env`, `prompt.txt`, `data/`, and SSH private key. The ZIP includes compatible `budget.py`, `trivia.py`, `fsae_trivia.json`, and `check_github.py` for a complete deployment, but you don't have to overwrite unchanged files.
-4. If you haven't already installed the dependencies, run these commands on Linux in your bot directory:
+Stop the running bot, back up your existing `.env`, `prompt.txt`, `bot.py`, `kb.py` and `data/` folder, and **copy these four files** into `/root/discord_bot`:
 
-   ```bash
-   sudo apt-get update
-   sudo apt-get install -y python3-venv git
-   python3 -m venv .venv
-   source .venv/bin/activate
-   python -m pip install --upgrade pip
-   python -m pip install --no-cache-dir -r requirements.txt
-   ```
+- `bot.py` — Discord command routing and PNG chart uploads
+- `kb.py` — configurable search result limits, same hybrid keyword + semantic logic, same short GitHub `main` source links
+- `bot_settings.py` — new; writes the saved manager setting to `data/bot_settings.json`
+- `mermaid_gantt.py` — new; scans complete Markdown files and renders supported Gantt code locally
 
-   On a very small VPS, run package installation with no other heavy processes. On Ubuntu/Debian with externally managed Python, the virtual environment avoids `externally-managed-environment` errors.
+Keep your existing `budget.py`, `trivia.py`, `fsae_trivia.json`, `.env`, `prompt.txt`, `data/usage.sqlite3`, `data/trivia.sqlite3`, existing semantic index and deploy key unchanged. You **do not** need to run `warm_search.py` again or rebuild embeddings.
 
-5. You can leave `.env` unchanged. Defaults are already safe for 1 GB Linux: semantic search on, **one ONNX CPU thread**, eight documents per batch. If you want explicit options, add:
+Inside your existing virtual environment:
 
-   ```dotenv
-   SEMANTIC_SEARCH=1
-   EMBEDDING_THREADS=1
-   EMBEDDING_BATCH_SIZE=8
-   ```
+```bash
+cd /root/discord_bot
+source .venv/bin/activate
+python3 -m pip install --no-cache-dir 'Pillow>=10,<13'
+python3 -u bot.py
+```
 
-6. **Optional, recommended for first setup:** while the bot is stopped, build its local embedding index:
+The supplied `requirements.txt` documents the full set of compatible dependencies for clean installs. For an existing install you only need the extra Pillow dependency.
 
-   ```bash
-   python warm_search.py
-   ```
+**Discord bot permissions:** Attach Files, Send Messages, Read Message History, and existing message-content/reaction permissions. Server managers need **Manage Server** permission to change the source limit; ordinary members can see and use charts.
 
-   This downloads an approximately **67 MB** model (plus tokenizer/supporting files) to `data/embedding_models/` and saves vectors to `data/semantic_index.npz`. The first download needs internet; later launches reuse the files. It connects to **your existing** private GitHub KB using your SSH deploy key; the embeddings are calculated locally. Never commit private `.env`, SSH key, or `data/`.
+## Commands
 
-7. Run `python bot.py`. Check `!kb status`: **`Search: hybrid`** means semantic search is usable; **`keyword (building)`** means it's still indexing, and **`keyword (unavailable)`** means the model or dependency failed (see Linux terminal logs). Searches keep working in keyword mode even without FastEmbed.
+| Command | Who | Cost | Behavior |
+|---|---|---|---|
+| `!kb gantt` | Everyone | 0 Claude tokens | Display the default project Mermaid Gantt chart as a PNG |
+| `!kb gantt suspension` | Everyone | 0 Claude tokens | Find the most relevant Mermaid Gantt for Suspension |
+| `!kb gantt list` | Everyone | 0 Claude tokens | List source Markdown charts and clickable short links |
+| `@Mean Green Bot show the gantt chart for aero` | Everyone | 0 Claude tokens | Render the original chart from the KB |
+| `!kb sources` | Everyone | 0 Claude tokens | Display current limit (default: **3** distinct files) |
+| `!kb sources 6` | **Manage Server** only | 0 Claude tokens | Save new limit, from **1 to 10** sources, across restarts |
+| `!kb status` | Everyone | 0 Claude tokens | Now also displays `Sources: N` |
 
-## What's changed
+**One "source" means one distinct document/file**, not one chunk. The search system can retrieve up to **two excerpts per file** and is capped at **18,000 total excerpt characters** even when set to 10 sources. Requesting 10 means "up to 10 relevant files", not a guarantee that 10 exist.
 
-- `kb.py` keeps the existing filename/heading/text keyword scoring and merges it with 384-dimensional local semantic similarity using rank fusion. The model is the small ONNX `BAAI/bge-small-en-v1.5`, not a big PyTorch model. It's a practical option for a 1 GB Linux VPS but absolute peak memory depends on the OS and other running services.
-- Private KB documents are **never transmitted to any embedding API**. FastEmbed downloads **public model weights** once. The documents still go to Claude as selected excerpt text when someone uses `!ask` or mentions the bot, as they did before.
-- Embeddings are **cached** on disk, validated against a SHA-256 digest of document contents, and rebuilt **only when indexed contents or the model configuration changes**. Initial indexing happens in the background, so Discord can still answer in keyword-only mode until ready.
-- Questions like "What caused MGR to shut down?" can now match docs saying "dissolved during COVID" even with little literal overlap.
-- `bot.py` offloads embedding inference to a worker thread so long queries don't freeze trivia reactions or the Discord connection.
-- General open-ended requests ("why are we struggling?", "how can we improve?", "analyze our history") may retrieve from **up to 8 excerpts across 5 files**. Ordinary questions remain limited to **5 excerpts across 3 files** to limit Anthropic token consumption.
-- `CORE_RULES` now prioritizes a useful answer, diagnosis, and practical steps while separating **confirmed evidence** from **inference**. It still avoids guessing rules or specs, uses excerpt citations, and keeps `prompt.txt` as the personality source.
-- No new external embedding bill, no new Discord permissions, and no changes to the $4.75 spending guard or the trivia database.
+Short masked source links still point to the KB's configured GitHub branch (`main` by default), with **no commit hash or line numbers**.
 
-## Commands (unchanged)
+## Mermaid Gantt support and accuracy
 
-`!trivia`, `!trivia fsae`, `!trivia vehicles`, `!trivia leaderboard`, `!leaderboard`, `!leaderboard all`, `!usage`, `!kb status`, `!kb find <topic>`, `!kb refresh` (server managers), `!ask <question>`, and bot mentions.
+Discord doesn't natively draw Mermaid in messages. The bot renders the chart to a local PNG using Pillow and attaches it as an image (nothing sent to a third-party chart-rendering website). It reads the entire Markdown file for code fences matching:
 
-`!kb refresh` refreshes the GitHub mirror and, if files changed, schedules re-indexing. A refresh response may appear before local semantic indexing finishes; `!kb status` shows progress.
+    ```mermaid
+    gantt
+      title F27 design
+      dateFormat YYYY-MM-DD
+      section Suspension
+      Geometry :crit, geo, 2026-10-18, 14d
+      Bell Cranks :active, bell, after geo, 7d
+      Design Gate :milestone, gate, 2026-12-05, 0d
+    ```
 
-## Files and troubleshooting
+The local renderer supports section labels, explicit dates, durations in whole days/weeks, `after` dependencies, `until` references, `done`, `active`, `crit`, `milestone`, and `excludes weekends` (plus supported explicit dates). It is a **lightweight visual approximation of Mermaid**, not the complete Mermaid engine; it doesn't reproduce every Mermaid style or advanced date feature. If the chart needs unsupported syntax, the bot will show a clickable GitHub source link **instead of inventing dates**. You can view the original chart with full Mermaid support on GitHub.
 
-- **Persistent private files (keep):** `.env`, `prompt.txt`, `data/usage.sqlite3`, `data/trivia.sqlite3`, `data/fsae-kb/`, `data/embedding_models/`, `data/semantic_index.npz`, and your deploy key outside the repo.
-- **Missing `fastembed` or unsupported CPU:** `!kb status` shows keyword fallback; reinstall requirements in your venv. Test with `python warm_search.py`.
-- **Low memory:** start with `EMBEDDING_BATCH_SIZE=4`, `EMBEDDING_THREADS=1`. If the host still runs out of RAM, use `SEMANTIC_SEARCH=0` to continue in keyword-only mode. On some 1 GB machines, enabling a swap file may help initial setup, but it's not a substitute for adequate RAM.
-- **Model cannot download:** a first-run public Hugging Face/model-host download is required. You can download once on a connected machine and transfer `data/embedding_models/`, or temporarily use keyword fallback.
-- **Model is loaded per process:** don't run `warm_search.py` simultaneously with `bot.py` on a 1 GB machine.
-- **Prompts:** the existing `bot.py` permits a max of 2,100 characters in `prompt.txt` and now reports that actual limit in its error message.
+If an AI response happens to include a Mermaid Gantt code block, the bot also tries to attach a rendered PNG; that AI-generated chart is labeled as such. The original Markdown chart command is preferable for verified schedule information.
 
-## Tests
+## Verification and regression tests
 
-`python3 -m unittest discover -s tests -v`
+```bash
+python3 -m unittest discover -s tests -v
+```
 
-Offline tests cover the 50/50 trivia behavior, trivia data format, unchanged scores, index persistence/invalidation, hybrid fusion, fallback if local model is unavailable, and deeper retrieval. Tests use a deterministic fake semantic encoder because external model weights and live Discord credentials are not bundled. **Real model downloads, Linux memory usage, and live Discord interactions must be checked on your host.**
+Tests cover hybrid search, source-count bounds and persistence, code-fence extraction from long Markdown files, schedule dependencies, PNG output, permissions, budget tracking, trivia, and command routing. Local test fixtures are synthetic; this package does not contain or connect to the private FSAE repository. Live Discord permissions and your exact Gantt syntax should be checked on your host.

@@ -10,6 +10,7 @@ import os
 import re
 import time
 from pathlib import Path
+from io import BytesIO
 
 import discord
 from anthropic import APIError, AsyncAnthropic
@@ -18,6 +19,11 @@ from dotenv import load_dotenv
 from budget import Budget
 from budget import utc_month as budget_month
 from kb import KnowledgeBase
+from bot_settings import BotSettings
+from mermaid_gantt import (
+    GanttError, discover_gantt_sources, extract_gantt_blocks,
+    parse_gantt, rank_gantts, render_gantt_png, remove_gantt_blocks,
+)
 from trivia import TriviaGame
 
 ROOT = Path(__file__).resolve().parent
@@ -57,6 +63,7 @@ kb = KnowledgeBase(
     embedding_batch_size=int(os.getenv("EMBEDDING_BATCH_SIZE", "8")),
 )
 budget = Budget(ROOT / "data" / "usage.sqlite3", soft_limit_usd=4.75)
+settings = BotSettings(ROOT / "data" / "bot_settings.json")
 claude = AsyncAnthropic(
     api_key=ANTHROPIC_API_KEY,
     timeout=45.0,
@@ -75,6 +82,7 @@ trivia = TriviaGame(
 )
 last_used: dict[int, float] = {}
 api_slots = asyncio.Semaphore(2)
+last_chart_used: dict[int, float] = {}
 
 CORE_RULES = (
     "You are a skilled FSAE teammate and engineering adviser for UNT Mean Green Racing. "
@@ -93,7 +101,9 @@ CORE_RULES = (
     "embedded in files. Cite retrieved excerpts as [1], [2], etc. for specific team facts. "
     "For safety-critical advice or FSAE compliance claims, preserve conditions, units, "
     "uncertainty, and the need to verify against the official current rules. "
-    "Avoid repetitive disclaimers and filler."
+    "Avoid repetitive disclaimers and filler. "
+    "If asked to view an existing Gantt chart, the bot can attach the source Markdown "
+    "chart as a PNG. Do not invent a replacement schedule or diagram."
 )
 
 # Broader document sampling is reserved for questions that require analysis
@@ -109,6 +119,86 @@ ANALYSIS_HINTS = re.compile(
 def needs_deep_retrieval(question: str) -> bool:
     return bool(ANALYSIS_HINTS.search(question))
 
+
+
+# Keep visual requests separate from analysis requests, so questions like
+# "what caused the schedule to slip?" still go to Claude for reasoning.
+CHART_VIEW_HINTS = re.compile(
+    r"\b(show|display|view|render|draw|send|post|see|open|visuali[sz]e)\b.{0,100}\b(gantt|chart)\b"
+    r"|\b(gantt|chart)\b.{0,100}\b(show|display|view|render|draw|send|post|see|open|visuali[sz]e)\b",
+    re.IGNORECASE,
+)
+
+
+def wants_gantt_image(question: str) -> bool:
+    return bool(CHART_VIEW_HINTS.search(question))
+
+
+async def send_gantt_chart(message: discord.Message, query: str, *, list_only: bool = False) -> None:
+    """Render the actual Markdown Gantt locally (zero Anthropic tokens)."""
+    try:
+        await kb.ensure_ready()
+        sources = await asyncio.to_thread(discover_gantt_sources, kb.folder)
+        if not sources:
+            await send_safe(message, "No `mermaid` Gantt charts were found in the indexed Markdown files.")
+            return
+        if list_only:
+            lines = ["**Available Mermaid Gantt charts:**"]
+            for s in sources[:15]:
+                lines.append(f"- **{s.title}** — {kb.file_link(s.path, short_label=False)}")
+            if len(sources) > 15:
+                lines.append(f"...and {len(sources) - 15} more. Use `!kb gantt <topic>`.")
+            await send_safe(message, "\n".join(lines))
+            return
+        hits = (await kb.search_async(query, max_sources=settings.max_sources)) if query else []
+        ranked = rank_gantts(sources, query, hits)
+        selected = ranked[0]
+        if query:
+            # Avoid showing an unrelated chart for a named subsystem or file.
+            from mermaid_gantt import VISUAL_WORDS
+            terms = {v.lower() for v in re.findall(r"[a-zA-Z0-9_-]+", query)} - VISUAL_WORDS
+            haystack = f"{selected.path} {selected.title} {selected.source}".lower()
+            if terms and not any(term in haystack for term in terms):
+                await send_safe(message,
+                    f"No matching Gantt chart for `{query}`. Try `!kb gantt list`.")
+                return
+        try:
+            parsed = await asyncio.to_thread(parse_gantt, selected.source)
+            data = await asyncio.to_thread(render_gantt_png, parsed)
+        except GanttError as exc:
+            await send_safe(message,
+                f"I found a Mermaid Gantt chart, but can't render its syntax reliably "
+                f"({exc}). View it on GitHub: {kb.file_link(selected.path, short_label=False)}")
+            return
+        label = f"**{parsed.title}**\nSource: {kb.file_link(selected.path, short_label=False)}"
+        try:
+            await message.reply(
+                label,
+                file=discord.File(BytesIO(data), filename="mgr-gantt.png"),
+                mention_author=False,
+                allowed_mentions=discord.AllowedMentions.none(),
+            )
+        except (discord.HTTPException, discord.Forbidden) as exc:
+            print(f"Gantt chart upload failed: {exc}")
+            await send_safe(message,
+                "Couldn't attach the chart image (check Attach Files permission). "
+                f"Original Mermaid chart: {kb.file_link(selected.path, short_label=False)}")
+    except Exception as exc:
+        print(f"Gantt chart failed: {type(exc).__name__}: {exc}")
+        await send_safe(message, "Could not load the Gantt chart. Check the bot terminal.")
+
+
+async def send_generated_gantt(message: discord.Message, data: bytes) -> None:
+    """Attach an already-rendered Claude Gantt, with source caveat."""
+    try:
+        await message.channel.send(
+            "Gantt visualization (AI-generated; verify dates against the cited documents):",
+            file=discord.File(BytesIO(data), filename="generated-gantt.png"),
+            allowed_mentions=discord.AllowedMentions.none(),
+        )
+    except (discord.HTTPException, discord.Forbidden) as exc:
+        print(f"Generated Mermaid image upload failed: {exc}")
+        await send_safe(message, "Couldn't attach the generated Gantt; check Attach Files permission.")
 
 
 async def send_safe(message: discord.Message, content: str) -> None:
@@ -332,6 +422,8 @@ async def on_message(message: discord.Message):
             "`!leaderboard` / `!leaderboard all` — monthly / all-time Claude token rankings\n"
             "`!usage` / `!usage all` — your token usage\n"
             "`!kb ping` · `!kb status` · `!kb find <topic>` — free KB tools\n"
+            "`!kb gantt [topic]` · `!kb gantt list` — show Markdown Gantt charts (free)\n"
+            "`!kb sources [1-10]` — view/set KB source count (set: server managers)\n"
             "`!kb refresh` — server managers only\n"
             "`!ask <question>` or @mention the bot — ask Claude",
         )
@@ -347,10 +439,43 @@ async def on_message(message: discord.Message):
             message,
             f"KB: {kb.file_count} indexed files | commit `{kb.commit[:10] or 'not synced'}` "
             f"| Git sync: {'stale/error' if kb.last_error else 'OK'} "
-            f"| Search: {('hybrid' if kb.semantic_status == 'ready' else 'keyword (' + kb.semantic_status + ')')}\n"
+            f"| Search: {('hybrid' if kb.semantic_status == 'ready' else 'keyword (' + kb.semantic_status + ')')} "
+            f"| Sources: {settings.max_sources}\n"
             f"UTC month: ${stats['estimated_usd']:.4f} / ${stats['limit_usd']:.2f} "
             f"({stats['calls']} API attempts, {stats['uncertain_calls']} uncertain).",
         )
+        return
+
+    if command_text == "!kb sources":
+        await send_safe(message,
+            f"KB retrieval limit: **{settings.max_sources} source files** per question "
+            "(up to two passages per file). Server managers: `!kb sources 1-10`.")
+        return
+
+    if command_text.startswith("!kb sources "):
+        if not message.author.guild_permissions.manage_guild:
+            await send_safe(message, "Only members with Manage Server permission can change KB sources.")
+            return
+        requested = content[len("!kb sources "):].strip()
+        if not re.fullmatch(r"(?:10|[1-9])", requested):
+            await send_safe(message, "Usage: `!kb sources <1-10>`")
+            return
+        try:
+            settings.set_sources(int(requested))
+        except (OSError, ValueError) as exc:
+            print(f"Couldn't save bot settings: {exc}")
+            await send_safe(message, "Couldn't save source settings. Check data/ write permission.")
+            return
+        await send_safe(message,
+            f"KB retrieval limit set to **{settings.max_sources} source files** "
+            "per question. Saved across restarts.")
+        return
+
+    if command_text == "!kb gantt" or command_text.startswith("!kb gantt "):
+        param = content[len("!kb gantt"):].strip()
+        async with message.channel.typing():
+            await send_gantt_chart(message, "" if param.casefold() == "list" else param,
+                                  list_only=param.casefold() == "list")
         return
 
     if command_text == "!kb refresh":
@@ -386,7 +511,7 @@ async def on_message(message: discord.Message):
         async with message.channel.typing():
             try:
                 await kb.ensure_ready()
-                hits = await kb.search_async(search_question)
+                hits = await kb.search_async(search_question, max_sources=settings.max_sources)
                 if not hits:
                     await send_safe(message, "No matching documents found.")
                 else:
@@ -423,6 +548,17 @@ async def on_message(message: discord.Message):
         await send_safe(message, f"Keep questions under {MAX_QUESTION_CHARS} characters.")
         return
 
+    if wants_gantt_image(question):
+        now = time.monotonic()
+        remaining = 5 - (now - last_chart_used.get(message.author.id, -1e10))
+        if remaining > 0:
+            await send_safe(message, f"Please wait {math.ceil(remaining)}s before another chart.")
+            return
+        last_chart_used[message.author.id] = now
+        async with message.channel.typing():
+            await send_gantt_chart(message, question)
+        return
+
     now = time.monotonic()
     remaining = COOLDOWN_SECONDS - (now - last_used.get(message.author.id, -1e10))
     if remaining > 0:
@@ -441,7 +577,8 @@ async def on_message(message: discord.Message):
         )
         async with message.channel.typing():
             await kb.ensure_ready()
-            hits = await kb.search_async(question, deep=needs_deep_retrieval(question))
+            hits = await kb.search_async(question, deep=needs_deep_retrieval(question),
+                                         max_sources=settings.max_sources)
             excerpts = kb.excerpts(hits)
             async with api_slots:
                 response = await answer_from_claude(question, excerpts, prompt_id)
@@ -465,16 +602,28 @@ async def on_message(message: discord.Message):
             answer = "I can't answer that request."
         else:
             answer = reply_text(response) or "Claude returned an empty answer."
-        links = kb.source_links(hits)[:3]
+        links = kb.source_links(hits)[:settings.max_sources]
         if links:
-            # One bare URL per line keeps Discord links clickable and avoids
-            # rendering literal [text](url) markup in regular bot messages.
-            note = "\n\n**Retrieved sources:**\n" + "\n".join(links)
+            note = "\n\nRetrieved sources: " + " | ".join(links)
         else:
             note = "\n\n*(General answer; no matching repository excerpts.)*"
         if kb.last_error:
             note += "\n*(Using cached documents; latest GitHub sync failed.)*"
-        await send_safe(message, answer + note)
+        chart_bytes = None
+        blocks = extract_gantt_blocks(answer)
+        if blocks:
+            try:
+                chart_bytes = await asyncio.to_thread(
+                    lambda: render_gantt_png(parse_gantt(blocks[0]))
+                )
+            except GanttError as exc:
+                print(f"Claude Mermaid diagram cannot be rendered: {exc}")
+                # Keep the raw Mermaid code so the diagram isn't silently lost.
+                answer += "\n*(This Gantt syntax needs the original Mermaid renderer.)*"
+        formatted = remove_gantt_blocks(answer) if chart_bytes is not None else answer
+        await send_safe(message, formatted + note)
+        if chart_bytes is not None:
+            await send_generated_gantt(message, chart_bytes)
         budget.mark_prompt(prompt_id, "completed")
 
     except (APIError, ValueError) as exc:

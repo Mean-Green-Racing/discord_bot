@@ -574,7 +574,8 @@ class KnowledgeBase:
             for i in ranked if similarities[i] >= 0.38
         ]
 
-    def search(self, question: str, *, deep: bool = False) -> list[SearchHit]:
+    def search(self, question: str, *, deep: bool = False,
+               max_sources: int | None = None) -> list[SearchHit]:
         """Hybrid rank fusion: lexical precision + semantic synonym matching.
 
         Use reciprocal rank fusion instead of comparing incompatible raw
@@ -599,27 +600,46 @@ class KnowledgeBase:
         max_passages = DEEP_MAX_PASSAGES if deep else MAX_PASSAGES
         max_files = DEEP_MAX_FILES if deep else MAX_FILES
         max_chars = DEEP_MAX_DOC_CHARS if deep else MAX_DOC_CHARS
+        if max_sources is not None:
+            # One source = one distinct repository file; allow up to two excerpts
+            # per file. Bound context even at 10 files to protect the $5 budget.
+            if not isinstance(max_sources, int) or isinstance(max_sources, bool) or not 1 <= max_sources <= 10:
+                raise ValueError("max_sources must be an integer from 1 to 10")
+            max_files = max_sources
+            max_passages = max(max_passages, min(20, max_sources * 2))
+            max_chars = max(max_chars, min(18000, max_sources * 1850))
         selected: list[SearchHit] = []
         file_hits: Counter[str] = Counter()
         used_chars = 0
-        for passage, score in ranked:
-            if file_hits[passage.path] >= (3 if deep else 2):
-                continue
-            if passage.path not in file_hits and len(file_hits) >= max_files:
-                continue
-            estimate = len(passage.content) + len(passage.path) + 100
-            if used_chars + estimate > max_chars:
-                continue
-            selected.append(SearchHit(passage, score))
-            file_hits[passage.path] += 1
-            used_chars += estimate
-            if len(selected) >= max_passages:
-                break
+        # First choose the strongest passage from each file (source diversity),
+        # then fill remaining context with supporting passages. Otherwise two
+        # excerpts from each of the first few files crowd out other sources.
+        rounds = ("new", "existing") if max_sources is not None else ("any",)
+        for phase in rounds:
+            for passage, score in ranked:
+                if phase == "new" and passage.path in file_hits:
+                    continue
+                if phase == "existing" and passage.path not in file_hits:
+                    continue
+                if file_hits[passage.path] >= (3 if deep else 2):
+                    continue
+                if passage.path not in file_hits and len(file_hits) >= max_files:
+                    continue
+                estimate = len(passage.content) + len(passage.path) + 100
+                if used_chars + estimate > max_chars:
+                    continue
+                selected.append(SearchHit(passage, score))
+                file_hits[passage.path] += 1
+                used_chars += estimate
+                if len(selected) >= max_passages:
+                    return selected
         return selected
 
-    async def search_async(self, question: str, *, deep: bool = False) -> list[SearchHit]:
+    async def search_async(self, question: str, *, deep: bool = False,
+                           max_sources: int | None = None) -> list[SearchHit]:
         """Offload local ONNX inference so Discord reaction events stay responsive."""
-        return await asyncio.to_thread(self.search, question, deep=deep)
+        return await asyncio.to_thread(self.search, question, deep=deep,
+                                       max_sources=max_sources)
 
     def excerpts(self, hits: list[SearchHit]) -> str:
         return "\n\n".join(
@@ -627,25 +647,23 @@ class KnowledgeBase:
             for i, hit in enumerate(hits, 1)
         )
 
-    def source_links(self, hits: list[SearchHit]) -> list[str]:
-        """Clickable Discord links with short labels pointing to current files.
-
-        Discord supports masked Markdown links: [title](https://example.com).
-        Keep branch-based URLs (no commit hashes or line-number fragments).
-        Add the parent directory if multiple source files share a basename.
-        """
+    def file_link(self, path: str, *, short_label: bool = True) -> str:
+        """Link to main/current branch; not a fixed commit or line numbers."""
         slug = github_repo_slug(self.repo_url) or "Mean-Green-Racing/fsae-kb"
         branch = quote(self.branch, safe="/")
+        url = f"https://github.com/{slug}/blob/{branch}/{quote(path, safe='/')}"
+        label = PurePosixPath(path).name if short_label else path
+        label = label.replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
+        return f"[{label}]({url})"
+
+    def source_links(self, hits: list[SearchHit]) -> list[str]:
+        """Masked Discord links, distinguishing duplicate basenames."""
         paths = list(dict.fromkeys(hit.passage.path for hit in hits))
         name_counts = Counter(PurePosixPath(path).name for path in paths)
-        links = []
+        result = []
         for path in paths:
-            item = PurePosixPath(path)
-            label = item.name
-            if name_counts[label] > 1 and item.parent != PurePosixPath("."):
-                label = f"{item.parent.name}/{label}"
-            # Escape Markdown link-label delimiters if filenames contain them.
-            label = label.replace("\\", "\\\\").replace("[", "\\[").replace("]", "\\]")
-            url = f"https://github.com/{slug}/blob/{branch}/{quote(path, safe='/')}"
-            links.append(f"[{label}]({url})")
-        return links
+            if name_counts[PurePosixPath(path).name] == 1:
+                result.append(self.file_link(path))
+            else:
+                result.append(self.file_link(path, short_label=False))
+        return result
