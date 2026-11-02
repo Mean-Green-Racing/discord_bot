@@ -1,4 +1,4 @@
-# Mean Green Bot — Mermaid Gantt + Manager Source Limit
+# Mean Green Bot, Mermaid Gantt + Manager Source Limit
 
 This is an **incremental update** to the hybrid-search, reaction-trivia version of Mean Green Bot. It uses the latest `kb.py` that produces short `[filename](https://github.com/.../blob/main/...)` source links.
 
