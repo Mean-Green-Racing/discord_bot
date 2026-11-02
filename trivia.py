@@ -1,16 +1,18 @@
-"""FSAE / vehicle trivia with answers via reactions on the ORIGINAL Discord message.
+"""MGR FSAE / Vehicle trivia with private Discord buttons and group scoring.
 
-Commands (no @mention necessary):
-  !trivia [easy|medium|hard]  Alternate FSAE / Vehicles rounds
-  !trivia fsae [difficulty]  Only local Mean Green Racing / FSAE questions
-  !trivia vehicles [difficulty] Only Open Trivia DB vehicle questions
-  !trivia score              Show your score
-  !trivia leaderboard        Show server leaderboard
-  !trivia skip               End the round (starter or Manage Server)
-  !trivia help               Show commands
+Commands (no mention required):
+  !trivia [easy|medium|hard]       Alternate FSAE / Vehicles rounds (50/50)
+  !trivia fsae [difficulty]        Local FSAE / Mean Green Racing questions
+  !trivia vehicles [difficulty]    Open Trivia DB Vehicles questions
+  !trivia score                   Your existing points and accuracy
+  !trivia leaderboard             Server leaderboard
+  !trivia skip                    Starter or Manage Server can cancel a round
+  !trivia help                    Show help
 
-The original question message displays a countdown, and is edited for wrong
-attempts, winners, and timeouts. Nothing here calls Claude or spends tokens.
+Everyone can answer once using buttons. A question lasts 60 seconds regardless
+of the timeout passed by older bot.py configurations. No scores or correct
+choices are announced until the minute ends; points depend on answer speed.
+No Claude calls or Anthropic API tokens are used.
 """
 from __future__ import annotations
 
@@ -18,7 +20,6 @@ import asyncio
 import html
 import hashlib
 import json
-import math
 import random
 import re
 import sqlite3
@@ -36,8 +37,6 @@ BATCH_SIZE = 25
 API_INTERVAL = 5.3  # OpenTDB limits clients to one API request per 5 seconds.
 POINTS = {"easy": 10, "medium": 20, "hard": 30}
 LETTERS = "ABCD"
-REACTIONS = {"A": "🇦", "B": "🇧", "C": "🇨", "D": "🇩"}
-REACTION_TO_LETTER = {emoji: letter for letter, emoji in REACTIONS.items()}
 ATTRIBUTION = "Questions: [Open Trivia DB](<https://opentdb.com/>) (CC BY-SA 4.0)"
 
 
@@ -46,6 +45,13 @@ def safe(text: str, limit: int = 450) -> str:
     return discord.utils.escape_mentions(
         discord.utils.escape_markdown(html.unescape(text)[:limit])
     )
+
+
+@dataclass(frozen=True)
+class Guess:
+    """Private answer with elapsed time captured at the moment of submission."""
+    letter: str
+    elapsed: float
 
 
 @dataclass
@@ -57,35 +63,79 @@ class Round:
     starter: int
     guild_id: int
     source: str = "vehicles"
-    attempts: set[int] = field(default_factory=set)
-    wrong_users: list[int] = field(default_factory=list)
+    guesses: dict[int, Guess] = field(default_factory=dict)
+    credited: dict[int, int] = field(default_factory=dict)
     deadline: float = 0.0
     deadline_epoch: int = 0
+    started: float = 0.0
     message: discord.Message | None = None
+    view: TriviaView | None = None
     timer: asyncio.Task | None = None
-    result: str = "active"  # active / correct / expired / skipped / setup_error
-    winner_id: int | None = None
+    edit_task: asyncio.Task | None = None
+    pending_update: bool = False
+    result: str = "active"  # active / expired / skipped / setup_error
+    save_failed: bool = False
     edit_lock: asyncio.Lock = field(default_factory=asyncio.Lock, repr=False)
 
 
+class TriviaAnswerButton(discord.ui.Button):
+    """Choice buttons use interaction callbacks; no message reactions needed."""
+
+    def __init__(self, trivia: TriviaGame, game: Round, letter: str):
+        super().__init__(label=letter, style=discord.ButtonStyle.primary)
+        self.trivia = trivia
+        self.game = game
+        self.letter = letter
+
+    async def callback(self, interaction: discord.Interaction):
+        await self.trivia.handle_button(interaction, self.game, self.letter)
+
+
+class TriviaView(discord.ui.View):
+    def __init__(self, trivia: TriviaGame, game: Round):
+        # Never use View's sliding timeout for competition timing: interactions
+        # extend it. The monotonic deadline and countdown task enforce 60 sec.
+        super().__init__(timeout=None)
+        self.game = game
+        for letter in LETTERS:
+            self.add_item(TriviaAnswerButton(trivia, game, letter))
+
+    def disable_choices(self):
+        for item in self.children:
+            item.disabled = True
+        self.stop()
+
+    async def on_error(self, interaction: discord.Interaction, error: Exception, item):
+        print(f"Trivia button callback error: {type(error).__name__}: {error}")
+        if not interaction.response.is_done():
+            try:
+                await interaction.response.send_message(
+                    "Could not register that guess. Please try again.", ephemeral=True
+                )
+            except discord.HTTPException:
+                pass
+
+
 class TriviaGame:
-    def __init__(self, db_path: str | Path, timeout_seconds: int = 15, tick_seconds: int = 5,
+    def __init__(self, db_path: str | Path, timeout_seconds: int = 60, tick_seconds: int = 5,
                  fsae_questions_path: str | Path | None = None):
         self.db_path = Path(db_path)
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
-        self.timeout_seconds = max(10, int(timeout_seconds))
+        # Older bot.py versions pass TRIVIA_TIMEOUT_SECONDS=15. The new
+        # competition is always one minute, even if bot.py still passes 15.
+        self.timeout_seconds = 60
         self.fsae_questions_path = (Path(fsae_questions_path) if fsae_questions_path
                                     else Path(__file__).with_name("fsae_trivia.json"))
         self._fsae_cache: list[dict] = []
         self._fsae_mtime: int | None = None
-        # 5-second updates, rather than 1-second edits, avoid unnecessary Discord API calls.
+        # Keep this old argument for compatibility. Discord's <t:...:R>
+        # timestamp supplies a live countdown; only vote changes need edits.
         self.tick_seconds = max(2, int(tick_seconds))
         self.active: dict[int, Round] = {}
         self.loading: set[int] = set()
         self.state_lock = asyncio.Lock()
         self.fetch_lock = asyncio.Lock()
         self.next_api_time = 0.0
-        self._warned_missing_manage_messages = False
         self._init_db()
 
     def _connect(self):
@@ -244,8 +294,14 @@ class TriviaGame:
             raw = json.loads(self.fsae_questions_path.read_text(encoding="utf-8"))
         except (OSError, ValueError) as exc:
             raise RuntimeError(f"Cannot load FSAE trivia JSON: {exc}") from exc
+        # Accept both the newer flat array and the older JSON format with
+        # easy/medium/hard arrays (plus an optional about section).
+        if isinstance(raw, dict):
+            raw = [question for level in POINTS
+                   for question in raw.get(level, [])
+                   if isinstance(question, dict)]
         if not isinstance(raw, list):
-            raise RuntimeError("FSAE trivia JSON must be a flat array of question objects")
+            raise RuntimeError("FSAE trivia JSON must contain question objects")
         parsed = []
         for item in raw:
             if not isinstance(item, dict) or item.get("difficulty") not in POINTS:
@@ -332,111 +388,196 @@ class TriviaGame:
             raise RuntimeError("; ".join(failures))
         return None
 
-    def _record_answer(self, guild_id: int, user_id: int, correct: bool, points: int):
+    @staticmethod
+    def _speed_points(difficulty: str, elapsed: float) -> int:
+        """Correct answers earn 1x-2x the original difficulty points.
+
+        At t=0: 2x. At t=30s: 1.5x. At t=60s: 1x.
+        Wrong answers always earn zero, regardless of speed.
+        """
+        base = POINTS[difficulty]
+        elapsed = max(0.0, min(60.0, elapsed))
+        return base + int(base * (60.0 - elapsed) / 60.0 + 0.5)
+
+    def _save_round_answers(self, game: Round) -> None:
+        """Commit every participant's score together when the round ends."""
+        rows = []
+        for user_id, guess in game.guesses.items():
+            correct = guess.letter == game.correct_letter
+            points = self._speed_points(game.difficulty, guess.elapsed) if correct else 0
+            if correct:
+                game.credited[user_id] = points
+            rows.append((game.guild_id, user_id, points, int(correct)))
+        if not rows:
+            return
         with closing(self._connect()) as con, con:
-            con.execute("""INSERT INTO scores(guild_id,user_id,points,correct,attempts)
+            con.executemany("""INSERT INTO scores(guild_id,user_id,points,correct,attempts)
                 VALUES(?,?,?,?,1)
                 ON CONFLICT(guild_id,user_id) DO UPDATE SET
                   points=points+excluded.points,
                   correct=correct+excluded.correct,
-                  attempts=attempts+1""", (guild_id, user_id, points, int(correct)))
+                  attempts=attempts+1""", rows)
 
     async def _say(self, message, content: str):
         await message.channel.send(content, allowed_mentions=discord.AllowedMentions.none())
 
-    def _render(self, game: Round) -> str:
+    @staticmethod
+    def _truncated_mentions(users: list[int], max_count: int = 34) -> str:
+        shown = users[:max_count]
+        result = ", ".join(f"<@{uid}>" for uid in shown) or "Nobody yet"
+        if len(users) > len(shown):
+            result += f" ... and {len(users) - len(shown)} more"
+        return result
+
+    def _render(self, game: Round) -> discord.Embed:
+        """Build a fresh embed from current state, never expose guesses early."""
+        title = f"{'FSAE' if game.source == 'fsae' else 'VEHICLE'} TRIVIA | {game.difficulty.upper()}"
         options = "\n".join(
-            f"{REACTIONS[letter]} **{letter}.** {safe(answer, 140)}"
-            for letter, answer in game.options.items()
+            f"**{letter}.** {safe(answer, 140)}" for letter, answer in game.options.items()
         )
-        content = (
-            f"**{'FSAE TRIVIA' if game.source == 'fsae' else 'VEHICLE TRIVIA'} | {game.difficulty.upper()}** "
-            f"({POINTS[game.difficulty]} points)\n\n"
-            f"{safe(game.question)}\n\n{options}\n\n"
-        )
+        description = f"**{safe(game.question)}**\n\n{options}"
         if game.result == "active":
-            seconds = max(0, math.ceil(game.deadline - time.monotonic()))
-            minutes, seconds = divmod(seconds, 60)
-            content += (
-                f"(ends <t:{game.deadline_epoch}:R>)\n"
-                "React to this message with 🇦 🇧 🇨 or 🇩. "
-                "One guess per player; first correct reaction wins."
+            description += (
+                f"\n\n**Time remaining:** <t:{game.deadline_epoch}:R>"
+                f"\nClick A, B, C or D below. One private guess per player."
+                f"\nCorrect answers earn **{POINTS[game.difficulty]}–{2 * POINTS[game.difficulty]} pts**"
+                " depending on response speed. Results reveal after 60 seconds."
             )
-        elif game.result == "correct":
-            content += (
-                f"🏁 **<@{game.winner_id}> got it right!** "
-                f"+{POINTS[game.difficulty]} points.\n"
-                f"Correct answer: **{game.correct_letter}. "
-                f"{safe(game.options[game.correct_letter], 140)}**"
+            color = discord.Color.blurple()
+        elif game.result == "expired":
+            description += (
+                f"\n\n**Time's up!** Correct answer: "
+                f"**{game.correct_letter}. {safe(game.options[game.correct_letter], 140)}**"
             )
-        elif game.result in ("expired", "skipped"):
-            label = "⏰ Time's up!" if game.result == "expired" else "⏭️ Round skipped."
-            content += (
-                f"{label}\nCorrect answer: **{game.correct_letter}. "
-                f"{safe(game.options[game.correct_letter], 140)}**"
+            color = discord.Color.green()
+        elif game.result == "skipped":
+            description += (
+                f"\n\n**Round cancelled — no points awarded.**\nCorrect answer: "
+                f"**{game.correct_letter}. {safe(game.options[game.correct_letter], 140)}**"
             )
+            color = discord.Color.orange()
         else:
-            content += "Cannot start this round: please grant the bot **Add Reactions** and **Read Message History**."
+            description += "\n\nCould not start this round. Check the bot's Send Messages / Embed Links permissions."
+            color = discord.Color.red()
 
-        if game.wrong_users:
-            # Keep the original message below the 2,000-character Discord limit.
-            hidden_count = max(0, len(game.wrong_users) - 7)
-            recent = game.wrong_users[-7:]
-            content += "\n\n**Wrong guesses:**\n"
-            if hidden_count:
-                content += f"...and {hidden_count} earlier wrong guess(es).\n"
-            content += "\n".join(f"<@{user_id}> got it wrong." for user_id in recent)
-
+        embed = discord.Embed(title=title, description=description, color=color)
+        if game.result == "active":
+            ids = list(game.guesses)
+            embed.add_field(
+                name=f"Answered ({len(ids)})",
+                value=self._truncated_mentions(ids),
+                inline=False,
+            )
+        elif game.result == "expired":
+            winners = sorted(
+                ((user_id, guess.elapsed, game.credited[user_id])
+                 for user_id, guess in game.guesses.items() if user_id in game.credited),
+                key=lambda record: (record[1], record[0])
+            )
+            if winners:
+                # Discord limits individual embed fields to 1024 characters.
+                # Show the fastest 70 directly; all players receive points.
+                # The single-embed display is limited by Discord's API size caps.
+                result_lines = [
+                    f"{i}. <@{uid}> — **+{pts} pts** ({elapsed:.1f}s)"
+                    for i, (uid, elapsed, pts) in enumerate(winners[:70], 1)
+                ]
+                pages = []
+                current = ""
+                for line in result_lines:
+                    if current and len(current) + len(line) + 1 > 990:
+                        pages.append(current)
+                        current = line
+                    else:
+                        current = f"{current}\n{line}" if current else line
+                if current:
+                    pages.append(current)
+                for number, chunk in enumerate(pages, 1):
+                    embed.add_field(
+                        name="Correct answers" if number == 1 else "Correct answers (continued)",
+                        value=chunk, inline=False
+                    )
+                if len(winners) > 70:
+                    embed.add_field(name="Additional winners",
+                                    value=f"{len(winners) - 70} additional correct players were scored.",
+                                    inline=False)
+            else:
+                embed.add_field(name="Correct answers", value="Nobody got it right.", inline=False)
+            incorrect = [uid for uid, guess in game.guesses.items()
+                         if guess.letter != game.correct_letter]
+            if incorrect:
+                embed.add_field(name=f"Incorrect ({len(incorrect)})",
+                                value=self._truncated_mentions(incorrect), inline=False)
+            if not game.guesses:
+                embed.add_field(name="Participation", value="Nobody submitted an answer.", inline=False)
+            if game.save_failed:
+                embed.add_field(name="Score error",
+                                value="Could not save scores. Contact a server manager.", inline=False)
+        elif game.result == "skipped" and game.guesses:
+            embed.add_field(name=f"Answered before cancellation ({len(game.guesses)})",
+                            value=self._truncated_mentions(list(game.guesses)), inline=False)
         if game.source == "vehicles":
-            content += f"\n\n*{ATTRIBUTION}*"
+            embed.add_field(name="Question source",
+                            value="[Open Trivia DB](https://opentdb.com/) (CC BY-SA 4.0)", inline=False)
         if game.result != "active":
-            content += "\nType `!trivia` to play again."
-        return content
+            embed.set_footer(text="Type !trivia to play again.")
+        return embed
 
     async def _edit(self, game: Round):
         if game.message is None:
             return
         async with game.edit_lock:
             try:
-                # Re-render inside the lock, so a queued countdown never undoes a win.
                 await game.message.edit(
-                    content=self._render(game),
+                    embed=self._render(game), view=game.view,
                     allowed_mentions=discord.AllowedMentions.none(),
                 )
             except discord.HTTPException as exc:
                 print(f"Trivia message edit failed: {exc}")
 
-    async def _remove_player_reaction(self, game: Round, emoji: str, user_id: int):
-        """Hide the chosen emoji after recording it (needs Manage Messages)."""
-        if game.message is None:
-            return
+    def _queue_edit(self, game: Round):
+        """Coalesce bursts of guesses into edits; Discord has rate limits."""
+        game.pending_update = True
+        if game.edit_task is None or game.edit_task.done():
+            game.edit_task = asyncio.create_task(self._edit_after_votes(game))
+
+    async def _edit_after_votes(self, game: Round):
         try:
-            await game.message.remove_reaction(emoji, discord.Object(id=user_id))
-        except discord.Forbidden:
-            if not self._warned_missing_manage_messages:
-                print("Trivia privacy warning: grant the bot Manage Messages to remove player reactions. "
-                      "Without it, users can see which answer someone selected.")
-                self._warned_missing_manage_messages = True
-        except discord.HTTPException as exc:
-            print(f"Could not remove a trivia guess reaction: {exc}")
+            while game.pending_update and game.result == "active":
+                game.pending_update = False
+                await asyncio.sleep(0.7)
+                if game.result != "active":
+                    return
+                await self._edit(game)
+        except asyncio.CancelledError:
+            return
+
+    async def _finish(self, channel_id: int, game: Round, outcome: str):
+        """Close once, award once, disable buttons, and reveal results."""
+        async with self.state_lock:
+            if game.result != "active" or self.active.get(channel_id) is not game:
+                return False
+            game.result = outcome
+            del self.active[channel_id]
+            if outcome == "expired":
+                try:
+                    self._save_round_answers(game)
+                except sqlite3.Error as exc:
+                    game.save_failed = True
+                    print(f"Trivia scoring failed: {exc}")
+            if game.view is not None:
+                game.view.disable_choices()
+            if game.timer is not None and game.timer is not asyncio.current_task():
+                game.timer.cancel()
+            if game.edit_task is not None and game.edit_task is not asyncio.current_task():
+                game.edit_task.cancel()
+        await self._edit(game)
+        return True
 
     async def _countdown(self, channel_id: int, game: Round):
         try:
-            while True:
-                remaining = game.deadline - time.monotonic()
-                if remaining > 0:
-                    await asyncio.sleep(min(self.tick_seconds, remaining))
-                expired = False
-                async with self.state_lock:
-                    if self.active.get(channel_id) is not game:
-                        return
-                    if time.monotonic() >= game.deadline:
-                        del self.active[channel_id]
-                        game.result = "expired"
-                        expired = True
-                await self._edit(game)
-                if expired:
-                    return
+            await asyncio.sleep(max(0.0, game.deadline - time.monotonic()))
+            await self._finish(channel_id, game, "expired")
         except asyncio.CancelledError:
             return
 
@@ -447,7 +588,7 @@ class TriviaGame:
             if not busy:
                 self.loading.add(channel_id)
         if busy:
-            await self._say(message, "A trivia question is already active here. React to its original message.")
+            await self._say(message, "A trivia question is already active here. Use its answer buttons.")
             return
 
         game: Round | None = None
@@ -457,88 +598,83 @@ class TriviaGame:
             if game is None:
                 await self._say(message, "No trivia questions available for that difficulty right now.")
                 return
-            game.deadline = time.monotonic() + self.timeout_seconds
+            game.started = time.monotonic()
+            game.deadline = game.started + self.timeout_seconds
             game.deadline_epoch = int(time.time() + self.timeout_seconds)
+            game.view = TriviaView(self, game)
             game.message = await message.channel.send(
-                self._render(game), allowed_mentions=discord.AllowedMentions.none()
+                embed=self._render(game), view=game.view,
+                allowed_mentions=discord.AllowedMentions.none()
             )
             async with self.state_lock:
                 self.active[channel_id] = game
                 self.loading.discard(channel_id)
             game.timer = asyncio.create_task(self._countdown(channel_id, game))
-            try:
-                for emoji in REACTIONS.values():
-                    await game.message.add_reaction(emoji)
-            except discord.HTTPException as exc:
-                print(f"Trivia reaction initialization failed: {exc}")
+        except Exception as exc:
+            if game is not None:
                 async with self.state_lock:
                     if self.active.get(channel_id) is game:
                         del self.active[channel_id]
-                        game.result = "setup_error"
-                if game.timer:
-                    game.timer.cancel()
-                await self._edit(game)
-        except Exception as exc:
-            async with self.state_lock:
-                if game is not None and self.active.get(channel_id) is game:
-                    del self.active[channel_id]
-                if game is not None and game.timer:
-                    game.timer.cancel()
+                    if game.timer:
+                        game.timer.cancel()
+                    if game.view:
+                        game.view.disable_choices()
             print(f"Trivia startup error: {type(exc).__name__}: {exc}")
             try:
-                await self._say(message, "Could not load vehicle trivia. Try `!trivia` again later.")
+                await self._say(message, "Could not start trivia. Check the bot permissions and try again.")
             except discord.HTTPException:
                 pass
         finally:
             async with self.state_lock:
                 self.loading.discard(channel_id)
 
-    async def handle_reaction(self, payload) -> bool:
-        """Handle only reactions to the bot's currently active question message."""
-        choice = REACTION_TO_LETTER.get(str(payload.emoji))
-        if choice is None:
-            return False
-        game = self.active.get(payload.channel_id)
-        if (game is None or game.message is None
-                or payload.message_id != game.message.id
-                or payload.guild_id != game.guild_id
-                or getattr(payload.member, "bot", False)):
-            return False
-
-        changed = False
+    async def handle_button(self, interaction: discord.Interaction,
+                            game: Round, letter: str):
+        """Lock in one guess per player; answer correctness stays private."""
+        if getattr(interaction.user, "bot", False):
+            await interaction.response.send_message("Bots cannot play trivia.", ephemeral=True)
+            return
+        status = "closed"
+        overdue = False
         async with self.state_lock:
-            if self.active.get(payload.channel_id) is not game:
-                return False
-            if time.monotonic() >= game.deadline:
-                del self.active[payload.channel_id]
-                game.result = "expired"
-                if game.timer:
-                    game.timer.cancel()
-                changed = True
-            elif payload.user_id not in game.attempts:
-                game.attempts.add(payload.user_id)
-                correct = choice == game.correct_letter
-                points = POINTS[game.difficulty] if correct else 0
-                self._record_answer(game.guild_id, payload.user_id, correct, points)
-                if correct:
-                    del self.active[payload.channel_id]
-                    game.result = "correct"
-                    game.winner_id = payload.user_id
-                    if game.timer:
-                        game.timer.cancel()
-                else:
-                    game.wrong_users.append(payload.user_id)
-                changed = True
+            channel_id = interaction.channel_id
+            if (self.active.get(channel_id) is game and game.result == "active"
+                    and interaction.guild_id == game.guild_id
+                    and game.message is not None
+                    and interaction.message is not None
+                    and interaction.message.id == game.message.id):
+                now = time.monotonic()
+                if now >= game.deadline:
+                    overdue = True
+                elif interaction.user.id in game.guesses:
+                    status = "duplicate"
+                elif letter in game.options:
+                    game.guesses[interaction.user.id] = Guess(
+                        letter=letter, elapsed=max(0.0, now - game.started)
+                    )
+                    status = "accepted"
+        if status == "accepted":
+            answer = f"Answer **{letter}** locked in. Results reveal when the minute ends."
+        elif status == "duplicate":
+            answer = "You've already submitted an answer this round. One guess per player."
+        else:
+            answer = "This trivia round has ended. Type `!trivia` for a new one."
+        try:
+            await interaction.response.send_message(
+                answer, ephemeral=True, allowed_mentions=discord.AllowedMentions.none()
+            )
+        except discord.HTTPException as exc:
+            print(f"Trivia private acknowledgment failed: {exc}")
+        if status == "accepted":
+            self._queue_edit(game)
+        if overdue:
+            await self._finish(channel_id, game, "expired")
 
-        # Remove the participant's reaction so Discord doesn't permanently show
-        # who selected which letter. It may still be briefly visible to others.
-        await self._remove_player_reaction(game, str(payload.emoji), payload.user_id)
-        if changed:
-            await self._edit(game)
-        return True
+    async def handle_reaction(self, payload) -> bool:
+        """Compatibility with older bot.py on_raw_reaction_add handlers."""
+        return False
 
     async def _skip(self, message):
-        game = None
         async with self.state_lock:
             game = self.active.get(message.channel.id)
             if game is None:
@@ -547,15 +683,11 @@ class TriviaGame:
                   and not message.author.guild_permissions.manage_guild):
                 error = "Only the round starter or a server manager can skip it."
             else:
-                del self.active[message.channel.id]
-                game.result = "skipped"
-                if game.timer:
-                    game.timer.cancel()
                 error = ""
         if error:
             await self._say(message, error)
         else:
-            await self._edit(game)
+            await self._finish(message.channel.id, game, "skipped")
 
     async def _score(self, message):
         with closing(self._connect()) as con:
@@ -585,7 +717,7 @@ class TriviaGame:
         await self._say(message, "\n".join(lines))
 
     async def handle_message(self, message, bot_id: int) -> bool:
-        """Handle trivia commands before routing to Claude. Only reactions count."""
+        """Handle trivia commands before Claude; button clicks use their view."""
         clean = re.sub(rf"<@!?{bot_id}>", "", message.content).strip()
         # Commands require a leading !. Never treat ordinary chat as commands.
         if clean.casefold() in ("!leaderboard trivia", "!trivialeaderboard"):
@@ -615,10 +747,10 @@ class TriviaGame:
                     "`!trivia easy|medium|hard` — choose difficulty\n"
                     "`!trivia fsae [easy|medium|hard]` — FSAE only\n"
                     "`!trivia vehicles [easy|medium|hard]` — OpenTDB only\n"
-                    "React 🇦 🇧 🇨 🇩 to answer (one guess per player).\n"
+                    "Click A/B/C/D buttons to answer. Everyone has 60 seconds; one guess each.\n"
                     "`!trivia score` · `!trivia leaderboard` · `!trivia skip` · `!trivia help`")
             elif re.fullmatch(r"(?:answer\s+)?[a-d]", arg, flags=re.IGNORECASE):
-                await self._say(message, "Answers are reactions now. Tap 🇦 🇧 🇨 or 🇩 on the trivia question.")
+                await self._say(message, "Tap the A/B/C/D buttons on the active trivia question.")
             else:
                 await self._say(message, "Unknown trivia command. Try `!trivia help`.")
             return True
